@@ -5,25 +5,38 @@
 A Vue3 component that displays JSON in a collapsible tree.
 Inspired by [vue-json-component](https://github.com/tylerkrupicka/vue-json-component) and [vue-json-tree-view](https://github.com/michaelfitzhavey/vue-json-tree-view) to work with Vue3.
 
-## Project setup
-```
-npm install
+## Example
+
+```vue
+<template>
+  <JsonTreeView :data="state.json" :maxDepth="3" />
+</template>
+
+<script lang="ts">
+import { defineComponent, reactive } from "vue";
+import { JsonTreeView } from "json-tree-view-vue3";
+
+export default defineComponent({
+  components: { JsonTreeView },
+  setup() {
+    const state = reactive({
+      json: `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
+    });
+    return {
+      state
+    };
+  }
+});
+</script>
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+![image](https://user-images.githubusercontent.com/9543980/97531049-b4bf0980-19f6-11eb-9060-676d223a66b3.png)
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## Props
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+| Props       | Required | Param Type | Default value | Description                                           |
+|-------------|----------|------------|---------------|-------------------------------------------------------|
+| data        | false    | String     |               | JSON string to display the tree                       |
+| rootKey     | false    | String     | "/"           | Top root-level name                                   |
+| maxDepth    | false    | Number     | 1             | The depth of the tree that will be open when rendered |
+| colorScheme | false    | String     | "light"       | "light" or "dark" can be used.                        |

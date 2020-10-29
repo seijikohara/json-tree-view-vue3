@@ -10,7 +10,7 @@
         {{ data.key }}:
         <span class="properties">{{ lengthString }}</span>
       </button>
-      <JsonViewItem
+      <JsonTreeViewItem
         v-on:selected="bubbleSelected"
         v-for="child in data.children"
         :key="getKey(child)"

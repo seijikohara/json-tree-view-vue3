@@ -1,5 +1,5 @@
 <template>
-  <JsonViewItem
+  <JsonTreeViewItem
     :class="[{ 'root-item': true, dark: colorScheme === 'dark' }]"
     :data="parsed"
     :maxDepth="maxDepth"
@@ -10,14 +10,14 @@
 <script lang="ts">
 import { computed, defineComponent, SetupContext } from "vue";
 
-import JsonViewItem, {
+import JsonTreeViewItem, {
   ItemType,
   ValueTypes,
   ItemData
 } from "./JsonTreeViewItem.vue";
 
 type Props = {
-  data: object;
+  data?: string;
   rootKey: string;
   maxDepth: number;
   colorScheme: string;
@@ -25,11 +25,11 @@ type Props = {
 
 export default defineComponent({
   name: "JsonTreeView",
-  components: { JsonViewItem },
+  components: { JsonTreeViewItem },
   props: {
     data: {
-      type: Object,
-      required: true
+      type: String,
+      required: false
     },
     rootKey: {
       type: String,
@@ -106,8 +106,12 @@ export default defineComponent({
     };
     const parsed = computed(
       (): ItemData => {
-        if (props.data instanceof Object) {
-          return build(props.rootKey, { ...props.data }, 0, "", true);
+        const json = props.data;
+        if (json != null && json != undefined) {
+          const data = JSON.parse(json);
+          if (data instanceof Object) {
+            return build(props.rootKey, { ...data }, 0, "", true);
+          }
         }
         return {
           key: props.rootKey,
