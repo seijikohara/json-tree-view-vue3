@@ -41,7 +41,7 @@
     "path": "^0.12.7",
     "prettier": "^2.1.2",
     "sass": "^1.28.0",
-    "sass-loader": "^8.0.2",
+    "sass-loader": "^10.0.5",
     "typescript": "^4.0.5"
   },
   "eslintConfig": {
