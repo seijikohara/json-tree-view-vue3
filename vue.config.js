@@ -5,13 +5,13 @@ module.exports = {
   configureWebpack: {
     resolve: {
       alias: {
-        "@": path.join(__dirname, "/")
-      }
-    }
+        "@": path.join(__dirname, "/"),
+      },
+    },
   },
   pages: {
     index: {
-      entry: "/index.ts"
-    }
-  }
+      entry: "/index.ts",
+    },
+  },
 };

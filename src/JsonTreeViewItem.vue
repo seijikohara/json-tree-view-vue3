@@ -43,7 +43,7 @@ import {
   defineComponent,
   PropType,
   reactive,
-  SetupContext
+  SetupContext,
 } from "vue";
 
 export interface SelectedData {
@@ -58,7 +58,7 @@ export interface Data {
 export enum ItemType {
   OBJECT,
   ARRAY,
-  VALUE
+  VALUE,
 }
 
 export type ValueTypes = object | string | number | boolean | undefined;
@@ -84,22 +84,22 @@ export default defineComponent({
   props: {
     data: {
       required: true,
-      type: Object as PropType<ItemData>
+      type: Object as PropType<ItemData>,
     },
     maxDepth: {
       type: Number,
       required: false,
-      default: 1
+      default: 1,
     },
     canSelect: {
       type: Boolean,
       required: false,
-      default: false
-    }
+      default: false,
+    },
   },
   setup(props: Props, context: SetupContext) {
     const state = reactive({
-      open: props.data.depth < props.maxDepth
+      open: props.data.depth < props.maxDepth,
     });
     const toggleOpen = () => {
       state.open = !state.open;
@@ -108,7 +108,7 @@ export default defineComponent({
       context.emit("selected", {
         key: data.key,
         value: data.value,
-        path: data.path
+        path: data.path,
       } as SelectedData);
     };
     const bubbleSelected = (data: Data) => context.emit("selected", data);
@@ -136,13 +136,13 @@ export default defineComponent({
     const classes = computed((): object => {
       return {
         "chevron-arrow": true,
-        opened: state.open
+        opened: state.open,
       };
     });
     const valueClasses = computed((): object => {
       return {
         "value-key": true,
-        "can-select": props.canSelect
+        "can-select": props.canSelect,
       };
     });
     const lengthString = computed((): string => {
@@ -168,9 +168,9 @@ export default defineComponent({
       valueClasses,
       lengthString,
       dataValue,
-      ItemType
+      ItemType,
     };
-  }
+  },
 });
 </script>
 

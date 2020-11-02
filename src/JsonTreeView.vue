@@ -13,7 +13,7 @@ import { computed, defineComponent, SetupContext } from "vue";
 import JsonTreeViewItem, {
   ItemType,
   ValueTypes,
-  ItemData
+  ItemData,
 } from "./JsonTreeViewItem.vue";
 
 type Props = {
@@ -29,23 +29,23 @@ export default defineComponent({
   props: {
     data: {
       type: String,
-      required: false
+      required: false,
     },
     rootKey: {
       type: String,
       required: false,
-      default: "/"
+      default: "/",
     },
     maxDepth: {
       type: Number,
       required: false,
-      default: 1
+      default: 1,
     },
     colorScheme: {
       type: String,
       required: false,
-      default: "light"
-    }
+      default: "light",
+    },
   },
   setup(props: Props, context: SetupContext) {
     const itemSelected = (data: object): void => context.emit("selected", data);
@@ -73,7 +73,7 @@ export default defineComponent({
             depth,
             path,
             length: children.length,
-            children
+            children,
           };
         }
 
@@ -92,7 +92,7 @@ export default defineComponent({
           depth,
           path,
           length: children.length,
-          children: children
+          children: children,
         };
       } else {
         return {
@@ -100,7 +100,7 @@ export default defineComponent({
           type: ItemType.VALUE,
           path: includeKey ? `${path}${key}` : path.slice(0, -1),
           depth,
-          value
+          value,
         };
       }
     };
@@ -118,15 +118,15 @@ export default defineComponent({
           type: ItemType.VALUE,
           path: "",
           depth: 0,
-          value: props.data
+          value: props.data,
         };
       }
     );
     return {
       itemSelected,
-      parsed
+      parsed,
     };
-  }
+  },
 });
 </script>
 
