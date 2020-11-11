@@ -1,6 +1,6 @@
 {
   "name": "json-tree-view-vue3",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "JSON tree rendering Vue3 component",
   "repository": {
     "type": "git",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "core-js": "^3.7.0",
-    "switch-ts": "^1.0.4",
+    "switch-ts": "^1.0.5",
     "vue": "^3.0.2"
   },
   "devDependencies": {
