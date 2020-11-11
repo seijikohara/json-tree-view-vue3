@@ -49,7 +49,8 @@ export default defineComponent({
     },
   },
   setup(props: Props, context: SetupContext) {
-    const itemSelected = (data: object): void => context.emit("selected", data);
+    const itemSelected = (data: unknown): void =>
+      context.emit("selected", data);
     const build = (
       key: string,
       value: ValueTypes,

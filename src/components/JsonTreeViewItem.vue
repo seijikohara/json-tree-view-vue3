@@ -63,7 +63,7 @@ export enum ItemType {
 }
 
 export type ValueTypes =
-  | object
+  | unknown
   | string
   | number
   | bigint
@@ -129,13 +129,13 @@ export default defineComponent({
         .is((v) => v === "object", then("var(--jtv-null-color)"))
         .is((v) => v === "undefined", then("var(--jtv-null-color)"))
         .default(then("var(--jtv-valueKey-color)"));
-    const classes = computed((): object => {
+    const classes = computed((): unknown => {
       return {
         "chevron-arrow": true,
         opened: state.open,
       };
     });
-    const valueClasses = computed((): object => {
+    const valueClasses = computed((): unknown => {
       return {
         "value-key": true,
         "can-select": props.canSelect,
