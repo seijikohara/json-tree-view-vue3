@@ -45,6 +45,7 @@ export default defineComponent({
       type: String,
       required: false,
       default: "light",
+      validator: (value: string) => ["light", "dark"].indexOf(value) !== -1,
     },
   },
   setup(props: Props, context: SetupContext) {

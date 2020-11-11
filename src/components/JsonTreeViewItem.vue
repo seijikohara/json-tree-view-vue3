@@ -45,6 +45,7 @@ import {
   reactive,
   SetupContext,
 } from "vue";
+import { then, when } from "switch-ts";
 
 export interface SelectedData {
   key: string;
@@ -61,7 +62,13 @@ export enum ItemType {
   VALUE,
 }
 
-export type ValueTypes = object | string | number | boolean | undefined;
+export type ValueTypes =
+  | object
+  | string
+  | number
+  | bigint
+  | boolean
+  | undefined;
 
 export type ItemData = {
   key: string;
@@ -101,38 +108,27 @@ export default defineComponent({
     const state = reactive({
       open: props.data.depth < props.maxDepth,
     });
-    const toggleOpen = () => {
-      state.open = !state.open;
-    };
-    const onClick = (data: Data) => {
+    const toggleOpen = () => (state.open = !state.open);
+    const onClick = (data: Data) =>
       context.emit("selected", {
         key: data.key,
         value: data.value,
         path: data.path,
       } as SelectedData);
-    };
     const bubbleSelected = (data: Data) => context.emit("selected", data);
     const getKey = (itemDate: ItemData): string => {
       const keyValue = Number(itemDate.key);
       return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`;
     };
-    const getValueColor = (value: ValueTypes): string => {
-      const type = typeof value;
-      switch (type) {
-        case "string":
-          return "var(--jtv-string-color)";
-        case "number":
-          return "var(--jtv-number-color)";
-        case "boolean":
-          return "var(--jtv-boolean-color)";
-        case "object":
-          return "var(--jtv-null-color)";
-        case "undefined":
-          return "var(--jtv-null-color)";
-        default:
-          return "var(--jtv-valueKey-color)";
-      }
-    };
+    const getValueColor = (value: ValueTypes): string =>
+      when(typeof value)
+        .is((v) => v === "string", then("var(--jtv-string-color)"))
+        .is((v) => v === "number", then("var(--jtv-number-color)"))
+        .is((v) => v === "bigint", then("var(--jtv-number-color)"))
+        .is((v) => v === "boolean", then("var(--jtv-boolean-color)"))
+        .is((v) => v === "object", then("var(--jtv-null-color)"))
+        .is((v) => v === "undefined", then("var(--jtv-null-color)"))
+        .default(then("var(--jtv-valueKey-color)"));
     const classes = computed((): object => {
       return {
         "chevron-arrow": true,
@@ -152,11 +148,11 @@ export default defineComponent({
       }
       return length === 1 ? `${length} property` : `${length} properties`;
     });
-    const dataValue = computed((): string => {
-      return props.data.value === undefined
+    const dataValue = computed((): string =>
+      props.data.value === undefined
         ? "undefined"
-        : JSON.stringify(props.data.value);
-    });
+        : JSON.stringify(props.data.value)
+    );
     return {
       state,
       toggleOpen,
