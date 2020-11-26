@@ -40,3 +40,7 @@ export default defineComponent({
 | rootKey     | false    | String     | "/"           | Top root-level name                                   |
 | maxDepth    | false    | Number     | 1             | The depth of the tree that will be open when rendered |
 | colorScheme | false    | String     | "light"       | "light" or "dark" can be used.                        |
+
+## Events
+
+- **selected**(event: `{key: string, value: unknown, path: string}`]

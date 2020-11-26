@@ -3,7 +3,7 @@
     :class="[{ 'root-item': true, dark: colorScheme === 'dark' }]"
     :data="parsed"
     :maxDepth="maxDepth"
-    v-on:selected="itemSelected"
+    @selected="itemSelected"
   />
 </template>
 
@@ -49,15 +49,17 @@ export default defineComponent({
     },
   },
   setup(props: Props, context: SetupContext) {
-    const itemSelected = (data: unknown): void =>
+    function itemSelected(data: unknown): void {
       context.emit("selected", data);
-    const build = (
+    }
+
+    function build(
       key: string,
       value: ValueTypes,
       depth: number,
       path: string,
       includeKey: boolean
-    ): ItemData => {
+    ): ItemData {
       if (value instanceof Object) {
         if (value instanceof Array) {
           const children = value.map((element, index) =>
@@ -105,7 +107,8 @@ export default defineComponent({
           value,
         };
       }
-    };
+    }
+
     const parsed = computed(
       (): ItemData => {
         const json = props.data;

@@ -1,14 +1,19 @@
 <template>
   <div class="theme-light">
     <JsonTreeView
-      :data="state.json"
       rootKey="root"
-      :maxDepth="2"
       colorScheme="light"
+      :data="state.json"
+      :maxDepth="2"
+      @selected="onSelected"
     />
   </div>
   <div class="theme-dark">
-    <JsonTreeView :data="state.json" colorScheme="dark" />
+    <JsonTreeView
+      colorScheme="dark"
+      :data="state.json"
+      @selected="onSelected"
+    />
   </div>
 </template>
 
@@ -22,8 +27,14 @@ export default defineComponent({
     const state = reactive({
       json: `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`,
     });
+
+    function onSelected(event: unknown) {
+      console.log(event);
+    }
+
     return {
       state,
+      onSelected,
     };
   },
 });

@@ -2,32 +2,32 @@
   <div class="json-view-item">
     <div v-if="data.type === ItemType.OBJECT || data.type === ItemType.ARRAY">
       <button
-        @click.stop="toggleOpen"
         class="data-key"
         :aria-expanded="state.open ? 'true' : 'false'"
+        @click.stop="toggleOpen"
       >
         <div :class="classes"></div>
         {{ data.key }}:
         <span class="properties">{{ lengthString }}</span>
       </button>
       <JsonTreeViewItem
-        v-on:selected="bubbleSelected"
+        v-show="state.open"
         v-for="child in data.children"
         :key="getKey(child)"
         :data="child"
-        v-show="state.open"
         :maxDepth="maxDepth"
         :canSelect="canSelect"
+        @selected="bubbleSelected"
       />
     </div>
     <div
+      v-if="data.type === ItemType.VALUE"
       :class="valueClasses"
-      v-on:click="onClick(data)"
-      @keyup.enter="onClick(data)"
-      @keyup.space="onClick(data)"
       :role="canSelect ? 'button' : undefined"
       :tabindex="canSelect ? '0' : undefined"
-      v-if="data.type === ItemType.VALUE"
+      @click="onClick(data)"
+      @keyup.enter="onClick(data)"
+      @keyup.space="onClick(data)"
     >
       <span class="value-key">{{ data.key }}:</span>
       <span :style="{ color: getValueColor(data.value) }">
@@ -108,20 +108,30 @@ export default defineComponent({
     const state = reactive({
       open: props.data.depth < props.maxDepth,
     });
-    const toggleOpen = () => (state.open = !state.open);
-    const onClick = (data: Data) =>
+
+    function toggleOpen(): void {
+      state.open = !state.open;
+    }
+
+    function onClick(data: Data): void {
       context.emit("selected", {
         key: data.key,
         value: data.value,
         path: data.path,
       } as SelectedData);
-    const bubbleSelected = (data: Data) => context.emit("selected", data);
-    const getKey = (itemDate: ItemData): string => {
+    }
+
+    function bubbleSelected(data: Data): void {
+      context.emit("selected", data);
+    }
+
+    function getKey(itemDate: ItemData): string {
       const keyValue = Number(itemDate.key);
       return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`;
-    };
-    const getValueColor = (value: ValueTypes): string =>
-      when(typeof value)
+    }
+
+    function getValueColor(value: ValueTypes): string {
+      return when(typeof value)
         .is((v) => v === "string", then("var(--jtv-string-color)"))
         .is((v) => v === "number", then("var(--jtv-number-color)"))
         .is((v) => v === "bigint", then("var(--jtv-number-color)"))
@@ -129,6 +139,8 @@ export default defineComponent({
         .is((v) => v === "object", then("var(--jtv-null-color)"))
         .is((v) => v === "undefined", then("var(--jtv-null-color)"))
         .default(then("var(--jtv-valueKey-color)"));
+    }
+
     const classes = computed((): unknown => {
       return {
         "chevron-arrow": true,
