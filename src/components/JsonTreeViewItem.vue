@@ -41,9 +41,9 @@
 import {
   computed,
   defineComponent,
-  PropType,
+  type PropType,
   reactive,
-  SetupContext,
+  type SetupContext,
 } from "vue";
 import { then, when } from "switch-ts";
 
