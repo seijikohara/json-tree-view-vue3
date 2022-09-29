@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, SetupContext } from "vue";
+import { computed, defineComponent, type SetupContext } from "vue";
 
 import JsonTreeViewItem, {
   ItemType,
-  ValueTypes,
-  ItemData,
+  type ValueTypes,
+  type ItemData,
 } from "./JsonTreeViewItem.vue";
 
 type Props = {
