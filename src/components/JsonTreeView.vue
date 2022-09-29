@@ -109,24 +109,22 @@ export default defineComponent({
       }
     }
 
-    const parsed = computed(
-      (): ItemData => {
-        const json = props.data;
-        if (json != null && json != undefined) {
-          const data = JSON.parse(json);
-          if (data instanceof Object) {
-            return build(props.rootKey, { ...data }, 0, "", true);
-          }
+    const parsed = computed((): ItemData => {
+      const json = props.data;
+      if (json != null && json != undefined) {
+        const data = JSON.parse(json);
+        if (data instanceof Object) {
+          return build(props.rootKey, { ...data }, 0, "", true);
         }
-        return {
-          key: props.rootKey,
-          type: ItemType.VALUE,
-          path: "",
-          depth: 0,
-          value: props.data,
-        };
       }
-    );
+      return {
+        key: props.rootKey,
+        type: ItemType.VALUE,
+        path: "",
+        depth: 0,
+        value: props.data,
+      };
+    });
     return {
       itemSelected,
       parsed,
