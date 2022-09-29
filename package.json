@@ -55,8 +55,7 @@
       "plugin:vue/vue3-essential",
       "eslint:recommended",
       "@vue/typescript/recommended",
-      "@vue/prettier",
-      "@vue/prettier/@typescript-eslint"
+      "plugin:prettier/recommended"
     ],
     "parserOptions": {
       "ecmaVersion": 2020
@@ -66,6 +65,7 @@
   "browserslist": [
     "> 1%",
     "last 2 versions",
-    "not dead"
+    "not dead",
+    "not ie 11"
   ]
 }
