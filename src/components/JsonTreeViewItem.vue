@@ -10,15 +10,16 @@
         {{ data.key }}:
         <span class="properties">{{ lengthString }}</span>
       </button>
-      <JsonTreeViewItem
-        v-show="state.open"
-        v-for="child in data.children"
-        :key="getKey(child)"
-        :data="child"
-        :maxDepth="maxDepth"
-        :canSelect="canSelect"
-        @selected="bubbleSelected"
-      />
+      <div v-if="state.open">
+        <JsonTreeViewItem
+          v-for="child in data.children"
+          :key="getKey(child)"
+          :data="child"
+          :maxDepth="maxDepth"
+          :canSelect="canSelect"
+          @selected="bubbleSelected"
+        />
+      </div>
     </div>
     <div
       v-if="data.type === ItemType.VALUE"
