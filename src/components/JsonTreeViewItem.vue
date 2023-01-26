@@ -114,7 +114,7 @@ export default defineComponent({
       state.open = !state.open;
     }
 
-    function onClick(data: Data): void {
+    function onClick(data: ItemData): void {
       context.emit("selected", {
         key: data.key,
         value: data.value,
