@@ -1,3 +1,115 @@
+<script lang="ts">
+export interface SelectedData {
+  key: string
+  value: string
+  path: string
+}
+export interface Data {
+  [key: string]: string
+}
+
+export enum ItemType {
+  OBJECT,
+  ARRAY,
+  VALUE
+}
+
+export type ValueTypes = unknown | string | number | bigint | boolean | undefined
+
+export type ItemData = {
+  key: string
+  type: ItemType
+  path: string
+  depth: number
+  length?: number
+  children?: ItemData[]
+  value?: ValueTypes
+}
+</script>
+
+<script setup lang="ts">
+import { computed, reactive } from 'vue'
+import { then, when } from 'switch-ts'
+
+defineOptions({
+  name: 'JsonTreeViewItem'
+})
+
+const props = withDefaults(
+  defineProps<{
+    data: ItemData
+    maxDepth?: number
+    canSelect?: boolean
+  }>(),
+  {
+    maxDepth: 1,
+    canSelect: false
+  }
+)
+
+const emit = defineEmits<{
+  (e: 'selected', value: SelectedData | Data): void
+}>()
+
+const state = reactive({
+  open: props.data.depth < props.maxDepth
+})
+
+const toggleOpen = (): void => {
+  state.open = !state.open
+}
+
+const onClick = (data: ItemData): void => {
+  emit('selected', {
+    key: data.key,
+    value: data.value,
+    path: data.path
+  } as SelectedData)
+}
+
+const onSelected = (data: Data): void => {
+  emit('selected', data)
+}
+
+const getKey = (itemDate: ItemData): string => {
+  const keyValue = Number(itemDate.key)
+  return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`
+}
+
+const getValueColor = (value: ValueTypes): string =>
+  when(typeof value)
+    .is((v) => v === 'string', then('var(--jtv-string-color)'))
+    .is((v) => v === 'number', then('var(--jtv-number-color)'))
+    .is((v) => v === 'bigint', then('var(--jtv-number-color)'))
+    .is((v) => v === 'boolean', then('var(--jtv-boolean-color)'))
+    .is((v) => v === 'object', then('var(--jtv-null-color)'))
+    .is((v) => v === 'undefined', then('var(--jtv-null-color)'))
+    .default(then('var(--jtv-valueKey-color)'))
+
+const classes = computed((): unknown => {
+  return {
+    'chevron-arrow': true,
+    opened: state.open
+  }
+})
+const valueClasses = computed((): unknown => {
+  return {
+    'value-key': true,
+    'can-select': props.canSelect
+  }
+})
+const lengthString = computed((): string => {
+  const length = props.data.length
+  if (props.data.type === ItemType.ARRAY) {
+    return length === 1 ? `${length} element` : `${length} elements`
+  }
+  return length === 1 ? `${length} property` : `${length} properties`
+})
+const dataValue = computed((): string =>
+  props.data.value === undefined ? 'undefined' : JSON.stringify(props.data.value)
+)
+</script>
+
 <template>
   <div class="json-view-item">
     <div v-if="data.type === ItemType.OBJECT || data.type === ItemType.ARRAY">
@@ -6,7 +118,7 @@
         :aria-expanded="state.open ? 'true' : 'false'"
         @click.stop="toggleOpen"
       >
-        <div :class="classes"></div>
+        <div :class="classes" />
         {{ data.key }}:
         <span class="properties">{{ lengthString }}</span>
       </button>
@@ -17,7 +129,7 @@
           :data="child"
           :maxDepth="maxDepth"
           :canSelect="canSelect"
-          @selected="bubbleSelected"
+          @selected="onSelected"
         />
       </div>
     </div>
@@ -37,151 +149,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import {
-  computed,
-  defineComponent,
-  type PropType,
-  reactive,
-  type SetupContext,
-} from "vue";
-import { then, when } from "switch-ts";
-
-export interface SelectedData {
-  key: string;
-  value: string;
-  path: string;
-}
-export interface Data {
-  [key: string]: string;
-}
-
-export enum ItemType {
-  OBJECT,
-  ARRAY,
-  VALUE,
-}
-
-export type ValueTypes =
-  | unknown
-  | string
-  | number
-  | bigint
-  | boolean
-  | undefined;
-
-export type ItemData = {
-  key: string;
-  type: ItemType;
-  path: string;
-  depth: number;
-  length?: number;
-  children?: ItemData[];
-  value?: ValueTypes;
-};
-
-type Props = {
-  data: ItemData;
-  maxDepth: number;
-  canSelect: boolean;
-};
-
-export default defineComponent({
-  name: "JsonTreeViewItem",
-  props: {
-    data: {
-      required: true,
-      type: Object as PropType<ItemData>,
-    },
-    maxDepth: {
-      type: Number,
-      required: false,
-      default: 1,
-    },
-    canSelect: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
-  },
-  setup(props: Props, context: SetupContext) {
-    const state = reactive({
-      open: props.data.depth < props.maxDepth,
-    });
-
-    function toggleOpen(): void {
-      state.open = !state.open;
-    }
-
-    function onClick(data: ItemData): void {
-      context.emit("selected", {
-        key: data.key,
-        value: data.value,
-        path: data.path,
-      } as SelectedData);
-    }
-
-    function bubbleSelected(data: Data): void {
-      context.emit("selected", data);
-    }
-
-    function getKey(itemDate: ItemData): string {
-      const keyValue = Number(itemDate.key);
-      return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`;
-    }
-
-    function getValueColor(value: ValueTypes): string {
-      return when(typeof value)
-        .is((v) => v === "string", then("var(--jtv-string-color)"))
-        .is((v) => v === "number", then("var(--jtv-number-color)"))
-        .is((v) => v === "bigint", then("var(--jtv-number-color)"))
-        .is((v) => v === "boolean", then("var(--jtv-boolean-color)"))
-        .is((v) => v === "object", then("var(--jtv-null-color)"))
-        .is((v) => v === "undefined", then("var(--jtv-null-color)"))
-        .default(then("var(--jtv-valueKey-color)"));
-    }
-
-    const classes = computed((): unknown => {
-      return {
-        "chevron-arrow": true,
-        opened: state.open,
-      };
-    });
-    const valueClasses = computed((): unknown => {
-      return {
-        "value-key": true,
-        "can-select": props.canSelect,
-      };
-    });
-    const lengthString = computed((): string => {
-      const length = props.data.length;
-      if (props.data.type === ItemType.ARRAY) {
-        return length === 1 ? `${length} element` : `${length} elements`;
-      }
-      return length === 1 ? `${length} property` : `${length} properties`;
-    });
-    const dataValue = computed((): string =>
-      props.data.value === undefined
-        ? "undefined"
-        : JSON.stringify(props.data.value)
-    );
-    return {
-      state,
-      toggleOpen,
-      onClick,
-      bubbleSelected,
-      getKey,
-      getValueColor,
-      classes,
-      valueClasses,
-      lengthString,
-      dataValue,
-      ItemType,
-    };
-  },
-});
-</script>
 
 <style lang="scss">
 .json-view-item:not(.root-item) {
