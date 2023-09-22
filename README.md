@@ -8,26 +8,15 @@ Inspired by [vue-json-component](https://www.npmjs.com/package/vue-json-componen
 ## Example
 
 ```vue
-<template>
-  <JsonTreeView :data="state.json" :maxDepth="3" />
-</template>
-
-<script lang="ts">
-import { defineComponent, reactive } from "vue";
+<script setup lang="ts">
 import { JsonTreeView } from "json-tree-view-vue3";
 
-export default defineComponent({
-  components: { JsonTreeView },
-  setup() {
-    const state = reactive({
-      json: `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
-    });
-    return {
-      state
-    };
-  }
-});
+const json = `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
 </script>
+
+<template>
+  <JsonTreeView :data="json" :maxDepth="3" />
+</template>
 ```
 
 ![image](https://user-images.githubusercontent.com/9543980/97531049-b4bf0980-19f6-11eb-9060-676d223a66b3.png)
