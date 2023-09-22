@@ -1,44 +1,31 @@
+<script setup lang="ts">
+import JsonTreeView from './components/JsonTreeView.vue'
+
+defineOptions({
+  name: 'JsonTreeView'
+})
+
+const json = `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
+
+const onSelected = (event: unknown) => {
+  console.log(event)
+}
+</script>
+
 <template>
   <div class="theme-light">
     <JsonTreeView
       rootKey="root"
       colorScheme="light"
-      :data="state.json"
+      :data="json"
       :maxDepth="2"
       @selected="onSelected"
     />
   </div>
   <div class="theme-dark">
-    <JsonTreeView
-      colorScheme="dark"
-      :data="state.json"
-      @selected="onSelected"
-    />
+    <JsonTreeView colorScheme="dark" :data="json" @selected="onSelected" />
   </div>
 </template>
-
-<script lang="ts">
-import { defineComponent, reactive } from "vue";
-import { JsonTreeView } from "./components";
-
-export default defineComponent({
-  components: { JsonTreeView },
-  setup() {
-    const state = reactive({
-      json: `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`,
-    });
-
-    function onSelected(event: unknown) {
-      console.log(event);
-    }
-
-    return {
-      state,
-      onSelected,
-    };
-  },
-});
-</script>
 
 <style lang="scss" scoped>
 .theme-light {
