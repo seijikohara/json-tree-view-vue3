@@ -10,6 +10,7 @@ Inspired by [vue-json-component](https://www.npmjs.com/package/vue-json-componen
 ```vue
 <script setup lang="ts">
 import { JsonTreeView } from "json-tree-view-vue3";
+import 'json-tree-view-vue3/dist/style.css'
 
 const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
 </script>

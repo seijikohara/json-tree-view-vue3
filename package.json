@@ -17,7 +17,18 @@
     "url": "https://github.com/seijikohara/json-tree-view-vue3/issues"
   },
   "homepage": "https://github.com/seijikohara/json-tree-view-vue3#readme",
-  "main": "src/components/index.ts",
+  "type": "module",
+  "main": "dist/json-tree-view-vue3.umd.js",
+  "module": "dist/json-tree-view-vue3.es.js",
+  "files": ["dist", "src/components/"],
+  "exports": {
+    ".": {
+      "import": "./dist/hello-button.es.js",
+      "require": "./dist/hello-button.umd.js"
+    },
+    "./dist/style.css": "./dist/style.css"
+  },
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check \"build-only {@}\" --",
