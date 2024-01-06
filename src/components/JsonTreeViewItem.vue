@@ -1,20 +1,17 @@
 <script lang="ts">
-export interface SelectedData {
-  key: string
-  value: string
-  path: string
-}
-export interface Data {
-  [key: string]: string
-}
-
 export enum ItemType {
   OBJECT,
   ARRAY,
   VALUE
 }
 
-export type ValueTypes = unknown | string | number | bigint | boolean | undefined
+export type PrimitiveTypes = string | number | boolean | null
+
+export interface SelectedData {
+  key: string
+  value: PrimitiveTypes
+  path: string
+}
 
 export type ItemData = {
   key: string
@@ -23,7 +20,7 @@ export type ItemData = {
   depth: number
   length?: number
   children?: ItemData[]
-  value?: ValueTypes
+  value?: PrimitiveTypes
 }
 </script>
 
@@ -48,7 +45,7 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  (e: 'selected', value: SelectedData | Data): void
+  (e: 'selected', value: SelectedData): void
 }>()
 
 const state = reactive({
@@ -59,31 +56,26 @@ const toggleOpen = (): void => {
   state.open = !state.open
 }
 
-const onClick = (data: ItemData): void => {
+const onClick = (data: ItemData): void =>
   emit('selected', {
     key: data.key,
     value: data.value,
     path: data.path
   } as SelectedData)
-}
 
-const onSelected = (data: Data): void => {
-  emit('selected', data)
-}
+const onSelected = (data: SelectedData): void => emit('selected', data)
 
 const getKey = (itemDate: ItemData): string => {
   const keyValue = Number(itemDate.key)
   return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`
 }
 
-const getValueColor = (value: ValueTypes): string =>
+const getValueColor = (value: PrimitiveTypes): string =>
   when(typeof value)
     .is((v) => v === 'string', then('var(--jtv-string-color)'))
     .is((v) => v === 'number', then('var(--jtv-number-color)'))
-    .is((v) => v === 'bigint', then('var(--jtv-number-color)'))
     .is((v) => v === 'boolean', then('var(--jtv-boolean-color)'))
-    .is((v) => v === 'object', then('var(--jtv-null-color)'))
-    .is((v) => v === 'undefined', then('var(--jtv-null-color)'))
+    .is((v) => v === 'object', then('var(--jtv-null-color)')) // for null value
     .default(then('var(--jtv-valueKey-color)'))
 
 const classes = computed((): unknown => {
@@ -92,12 +84,14 @@ const classes = computed((): unknown => {
     opened: state.open
   }
 })
+
 const valueClasses = computed((): unknown => {
   return {
     'value-key': true,
     'can-select': props.canSelect
   }
 })
+
 const lengthString = computed((): string => {
   const length = props.data.length
   if (props.data.type === ItemType.ARRAY) {
@@ -105,9 +99,8 @@ const lengthString = computed((): string => {
   }
   return length === 1 ? `${length} property` : `${length} properties`
 })
-const dataValue = computed((): string =>
-  props.data.value === undefined ? 'undefined' : JSON.stringify(props.data.value)
-)
+
+const dataValue = computed((): string => JSON.stringify(props.data.value))
 </script>
 
 <template>
@@ -143,7 +136,7 @@ const dataValue = computed((): string =>
       @keyup.space="onClick(data)"
     >
       <span class="value-key">{{ data.key }}:</span>
-      <span :style="{ color: getValueColor(data.value) }">
+      <span :style="{ color: getValueColor(data.value as PrimitiveTypes) }">
         {{ dataValue }}
       </span>
     </div>

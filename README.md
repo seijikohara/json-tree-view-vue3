@@ -11,25 +11,25 @@ Inspired by [vue-json-component](https://www.npmjs.com/package/vue-json-componen
 <script setup lang="ts">
 import { JsonTreeView } from "json-tree-view-vue3";
 
-const json = `{"string":"text","number":123,"boolean":true,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
+const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
 </script>
 
 <template>
-  <JsonTreeView :data="json" :maxDepth="3" />
+  <JsonTreeView :json="json" :maxDepth="3" />
 </template>
 ```
 
-![image](https://user-images.githubusercontent.com/9543980/97531049-b4bf0980-19f6-11eb-9060-676d223a66b3.png)
+<img width="296" alt="image" src="https://github.com/seijikohara/json-tree-view-vue3/assets/9543980/0d4d74bc-367d-4fd1-a47a-edfb857a6478">
 
 ## Props
 
 | Props       | Required | Param Type | Default value | Description                                           |
 |-------------|----------|------------|---------------|-------------------------------------------------------|
-| data        | false    | String     |               | JSON string to display the tree                       |
-| rootKey     | false    | String     | "/"           | Top root-level name                                   |
-| maxDepth    | false    | Number     | 1             | The depth of the tree that will be open when rendered |
-| colorScheme | false    | String     | "light"       | "light" or "dark" can be used.                        |
+| json        | true     | string     |               | JSON string to display the tree                       |
+| rootKey     | false    | string     | "/"           | Top root-level name                                   |
+| maxDepth    | false    | number     | 1             | The depth of the tree that will be open when rendered |
+| colorScheme | false    | string     | "light"       | "light" or "dark" can be used.                        |
 
 ## Events
 
-- **selected**(event: `{key: string, value: unknown, path: string}`]
+- **selected**(event: `{key: string, value: PrimitiveTypes, path: string}`]

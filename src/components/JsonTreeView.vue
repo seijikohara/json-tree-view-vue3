@@ -4,7 +4,12 @@ export type ColorScheme = 'light' | 'dark'
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import JsonTreeViewItem, { type ItemData, ItemType, type ValueTypes } from './JsonTreeViewItem.vue'
+import JsonTreeViewItem, {
+  type ItemData,
+  ItemType,
+  type PrimitiveTypes,
+  type SelectedData
+} from './JsonTreeViewItem.vue'
 
 defineOptions({
   name: 'JsonTreeView'
@@ -12,7 +17,7 @@ defineOptions({
 
 const props = withDefaults(
   defineProps<{
-    data: string
+    json: string
     rootKey?: string
     maxDepth?: number
     colorScheme?: ColorScheme
@@ -25,16 +30,14 @@ const props = withDefaults(
 )
 
 const emit = defineEmits<{
-  (e: 'selected', value: unknown): void
+  (e: 'selected', value: SelectedData): void
 }>()
 
-const onSelected = (data: unknown): void => {
-  emit('selected', data)
-}
+const onSelected = (selectedData: SelectedData): void => emit('selected', selectedData)
 
 const build = (
   key: string,
-  value: ValueTypes,
+  value: PrimitiveTypes | Object,
   depth: number,
   path: string,
   includeKey: boolean
@@ -83,19 +86,16 @@ const build = (
 }
 
 const parsed = computed((): ItemData => {
-  const json = props.data
-  if (json != null && json != undefined) {
-    const data = JSON.parse(json)
-    if (data instanceof Object) {
-      return build(props.rootKey, { ...data }, 0, '', true)
-    }
+  const data = JSON.parse(props.json)
+  if (data instanceof Object) {
+    return build(props.rootKey, { ...data }, 0, '', true)
   }
   return {
     key: props.rootKey,
     type: ItemType.VALUE,
     path: '',
     depth: 0,
-    value: props.data
+    value: props.json
   }
 })
 </script>
