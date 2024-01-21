@@ -18,23 +18,26 @@
   },
   "homepage": "https://github.com/seijikohara/json-tree-view-vue3#readme",
   "type": "module",
-  "main": "dist/json-tree-view-vue3.umd.js",
-  "module": "dist/json-tree-view-vue3.es.js",
-  "files": ["dist", "src/components/"],
+  "main": "./dist/json-tree-view-vue3.umd.js",
+  "module": "./dist/json-tree-view-vue3.es.js",
+  "files": [
+    "dist"
+  ],
   "exports": {
     ".": {
-      "import": "./dist/hello-button.es.js",
-      "require": "./dist/hello-button.umd.js"
+      "import": {
+        "types": "./dist/src/components/index.d.ts",
+        "default": "./dist/json-tree-view-vue3.es.js"
+      },
+      "require": "./dist/json-tree-view-vue3.umd.js"
     },
     "./dist/style.css": "./dist/style.css"
   },
-  "types": "dist/index.d.ts",
+  "types": "./dist/src/components/index.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "vite build && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/"
   },
@@ -46,7 +49,6 @@
     "@tsconfig/node18": "^18.2.2",
     "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^5.0.3",
-    "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vue/eslint-config-prettier": "^9.0.0",
     "@vue/eslint-config-typescript": "^12.0.0",
     "@vue/tsconfig": "^0.5.1",
@@ -57,7 +59,6 @@
     "sass": "^1.70.0",
     "typescript": "~5.3.3",
     "vite": "^5.0.12",
-    "vite-plugin-dts": "^3.7.1",
     "vue-tsc": "^1.8.27"
   },
   "peerDependencies": {

@@ -22,6 +22,12 @@ export type ItemData = {
   children?: ItemData[]
   value?: PrimitiveTypes
 }
+
+export type Props = {
+  data: ItemData
+  maxDepth?: number
+  canSelect?: boolean
+}
 </script>
 
 <script setup lang="ts">
@@ -33,11 +39,7 @@ defineOptions({
 })
 
 const props = withDefaults(
-  defineProps<{
-    data: ItemData
-    maxDepth?: number
-    canSelect?: boolean
-  }>(),
+  defineProps<Props>(),
   {
     maxDepth: 1,
     canSelect: false
