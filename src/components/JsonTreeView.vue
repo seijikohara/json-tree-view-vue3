@@ -1,5 +1,12 @@
 <script lang="ts">
 export type ColorScheme = 'light' | 'dark'
+
+export type Props = {
+  json: string
+  rootKey?: string
+  maxDepth?: number
+  colorScheme?: ColorScheme
+}
 </script>
 
 <script setup lang="ts">
@@ -16,12 +23,7 @@ defineOptions({
 })
 
 const props = withDefaults(
-  defineProps<{
-    json: string
-    rootKey?: string
-    maxDepth?: number
-    colorScheme?: ColorScheme
-  }>(),
+  defineProps<Props>(),
   {
     rootKey: '/',
     maxDepth: 1,
