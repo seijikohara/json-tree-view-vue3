@@ -22,14 +22,11 @@ defineOptions({
   name: 'JsonTreeView'
 })
 
-const props = withDefaults(
-  defineProps<Props>(),
-  {
-    rootKey: '/',
-    maxDepth: 1,
-    colorScheme: 'light'
-  }
-)
+const props = withDefaults(defineProps<Props>(), {
+  rootKey: '/',
+  maxDepth: 1,
+  colorScheme: 'light'
+})
 
 const emit = defineEmits<{
   (e: 'selected', value: SelectedData): void
