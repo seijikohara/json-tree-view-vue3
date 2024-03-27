@@ -38,13 +38,10 @@ defineOptions({
   name: 'JsonTreeViewItem'
 })
 
-const props = withDefaults(
-  defineProps<Props>(),
-  {
-    maxDepth: 1,
-    canSelect: false
-  }
-)
+const props = withDefaults(defineProps<Props>(), {
+  maxDepth: 1,
+  canSelect: false
+})
 
 const emit = defineEmits<{
   (e: 'selected', value: SelectedData): void
