@@ -23,7 +23,7 @@ export type ItemData = {
   value?: PrimitiveTypes
 }
 
-export type Props = {
+export interface Props {
   data: ItemData
   maxDepth?: number
   canSelect?: boolean
@@ -38,54 +38,51 @@ defineOptions({
   name: 'JsonTreeViewItem'
 })
 
-const props = withDefaults(defineProps<Props>(), {
-  maxDepth: 1,
-  canSelect: false
-})
+const { data, maxDepth = 1, canSelect = false } = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'selected', value: SelectedData): void
 }>()
 
-const isOpen = ref<boolean>(props.data.depth < props.maxDepth)
+const isOpen = ref(data.depth < maxDepth)
 
-const toggleOpen = (): void => {
+const toggleOpen = () => {
   isOpen.value = !isOpen.value
 }
 
-const onClick = (data: ItemData): void => {
+const onClick = (itemData: ItemData) => {
   const selectedData: SelectedData = {
-    key: data.key,
-    value: data.value!,
-    path: data.path
+    key: itemData.key,
+    value: itemData.value!,
+    path: itemData.path
   }
   emit('selected', selectedData)
 }
 
-const onSelected = (data: SelectedData): void => emit('selected', data)
+const onSelected = (selectedData: SelectedData) => emit('selected', selectedData)
 
-const chevronClasses = computed<Record<string, boolean>>(() => ({
+const chevronClasses = computed(() => ({
   'chevron-arrow': true,
   opened: isOpen.value
 }))
 
-const valueClasses = computed<Record<string, boolean>>(() => ({
+const valueClasses = computed(() => ({
   'value-key': true,
-  'can-select': props.canSelect
+  'can-select': canSelect
 }))
 
-const lengthString = computed<string>(() => {
-  const { length, type } = props.data
+const lengthString = computed(() => {
+  const { length, type } = data
   if (length === undefined) return ''
 
   return getLengthString(length, type === ItemType.ARRAY)
 })
 
-const dataValue = computed<string>(() => JSON.stringify(props.data.value))
+const dataValue = computed(() => JSON.stringify(data.value))
 
-const getItemKey = (item: ItemData): string => formatKey(item.key)
+const getItemKey = (item: ItemData) => formatKey(item.key)
 
-const getValueColor = (value: PrimitiveTypes): string => getValueColorVariable(value)
+const getValueColor = (value: PrimitiveTypes) => getValueColorVariable(value)
 </script>
 
 <template>

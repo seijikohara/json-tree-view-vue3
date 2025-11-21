@@ -8,9 +8,8 @@ export default defineConfigWithVueTs(
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**']
   },
 
-  pluginVue.configs['flat/essential'],
+  pluginVue.configs['flat/strongly-recommended'],
   vueTsConfigs.recommended,
-
   pluginPrettierRecommended,
 
   {

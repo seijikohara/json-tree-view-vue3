@@ -11,23 +11,26 @@ export const isPrimitive = (value: unknown): value is PrimitiveTypes =>
   typeof value === 'number' ||
   typeof value === 'boolean'
 
-export const getValueColorVariable = (value: PrimitiveTypes): string => {
+export const getValueColorVariable = (value: PrimitiveTypes) => {
+  if (value === null) {
+    return 'var(--jtv-null-color)'
+  }
+
   const typeColorMap: Record<string, string> = {
     string: 'var(--jtv-string-color)',
     number: 'var(--jtv-number-color)',
-    boolean: 'var(--jtv-boolean-color)',
-    object: 'var(--jtv-null-color)'
+    boolean: 'var(--jtv-boolean-color)'
   }
 
   return typeColorMap[typeof value] ?? 'var(--jtv-valueKey-color)'
 }
 
-export const formatKey = (key: string): string => {
+export const formatKey = (key: string) => {
   const numericKey = Number(key)
   return Number.isNaN(numericKey) ? `"${key}":` : `${key}":`
 }
 
-export const getLengthString = (length: number, isArray: boolean): string => {
+export const getLengthString = (length: number, isArray: boolean) => {
   const unit = isArray ? 'element' : 'property'
   const pluralUnit = isArray ? 'elements' : 'properties'
   return length === 1 ? `${length} ${unit}` : `${length} ${pluralUnit}`
@@ -37,8 +40,8 @@ export const buildPath = (
   basePath: string,
   key: string,
   includeKey: boolean,
-  isArrayElement: boolean = false
-): string => {
+  isArrayElement = false
+) => {
   if (!includeKey) return basePath
 
   if (isArrayElement) {
@@ -48,7 +51,7 @@ export const buildPath = (
   return `${basePath}${key}.`
 }
 
-export const buildValuePath = (basePath: string, key: string, includeKey: boolean): string => {
+export const buildValuePath = (basePath: string, key: string, includeKey: boolean) => {
   if (!includeKey) {
     return basePath.slice(0, -1)
   }

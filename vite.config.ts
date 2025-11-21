@@ -6,8 +6,20 @@ import { libInjectCss } from 'vite-plugin-lib-inject-css'
 const name = 'json-tree-view-vue3'
 
 export default defineConfig({
-  plugins: [vue(), libInjectCss()],
+  plugins: [
+    vue({
+      features: {
+        propsDestructure: true
+      },
+      script: {
+        defineModel: true,
+        hoistStatic: true
+      }
+    }),
+    libInjectCss()
+  ],
   build: {
+    target: 'baseline-widely-available',
     lib: {
       entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       name,

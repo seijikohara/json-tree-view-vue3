@@ -39,8 +39,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && vue-tsc --emitDeclarationOnly",
+    "build": "vue-tsc --noEmit && vite build && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
+    "type-check": "vue-tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write src/",
     "deps:update": "npx npm-check-updates -u && npm install",
