@@ -18,27 +18,30 @@
   },
   "homepage": "https://github.com/seijikohara/json-tree-view-vue3#readme",
   "type": "module",
-  "main": "./dist/json-tree-view-vue3.umd.js",
-  "module": "./dist/json-tree-view-vue3.es.js",
+  "main": "./dist/json-tree-view-vue3.umd.cjs",
+  "module": "./dist/json-tree-view-vue3.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/src/components/index.d.ts",
-        "default": "./dist/json-tree-view-vue3.es.js"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/json-tree-view-vue3.js"
       },
-      "require": "./dist/json-tree-view-vue3.umd.js"
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/json-tree-view-vue3.umd.cjs"
+      }
     },
-    "./dist/style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css"
   },
-  "types": "./dist/src/components/index.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "vite build && vue-tsc --emitDeclarationOnly",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "lint": "eslint .",
     "format": "prettier --write src/",
     "deps:update": "npx npm-check-updates -u && npm install",
     "deps:check": "npx npm-check-updates",
@@ -48,26 +51,22 @@
     "test:e2e:debug": "playwright test --debug",
     "test:e2e:report": "playwright show-report"
   },
-  "dependencies": {
-    "switch-ts": "^1.1.1"
-  },
   "devDependencies": {
-    "@playwright/test": "^1.49.1",
-    "@rushstack/eslint-patch": "^1.10.3",
-    "@tsconfig/node20": "^20.1.4",
-    "@types/node": "^20.14.2",
-    "@vitejs/plugin-vue": "^5.0.5",
-    "@vue/eslint-config-prettier": "^9.0.0",
-    "@vue/eslint-config-typescript": "^13.0.0",
-    "@vue/tsconfig": "^0.5.1",
-    "eslint": "^8.57.0",
-    "eslint-plugin-vue": "^9.26.0",
-    "npm-run-all2": "^6.2.0",
-    "prettier": "^3.3.2",
-    "sass": "^1.77.5",
-    "typescript": "~5.4.5",
-    "vite": "^5.3.1",
-    "vue-tsc": "^2.0.21"
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^24.10.1",
+    "@vitejs/plugin-vue": "^6.0.2",
+    "@vue/eslint-config-prettier": "^10.2.0",
+    "@vue/eslint-config-typescript": "^14.6.0",
+    "@vue/tsconfig": "^0.8.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-vue": "^10.5.1",
+    "prettier": "^3.6.2",
+    "sass": "^1.94.2",
+    "typescript": "~5.9.3",
+    "vite": "^7.2.4",
+    "vite-plugin-lib-inject-css": "^2.2.2",
+    "vue-tsc": "^3.1.4"
   },
   "peerDependencies": {
     "vue": ">=3.2.0"
