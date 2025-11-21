@@ -1,7 +1,7 @@
 <script lang="ts">
 export type ColorScheme = 'light' | 'dark'
 
-export type Props = {
+export interface Props {
   json: string
   rootKey?: string
   maxDepth?: number
@@ -23,17 +23,13 @@ defineOptions({
   name: 'JsonTreeView'
 })
 
-const props = withDefaults(defineProps<Props>(), {
-  rootKey: '/',
-  maxDepth: 1,
-  colorScheme: 'light'
-})
+const { json, rootKey = '/', maxDepth = 1, colorScheme = 'light' } = defineProps<Props>()
 
 const emit = defineEmits<{
   (e: 'selected', value: SelectedData): void
 }>()
 
-const onSelected = (selectedData: SelectedData): void => emit('selected', selectedData)
+const onSelected = (selectedData: SelectedData) => emit('selected', selectedData)
 
 const buildArrayItem = (
   key: string,
@@ -41,7 +37,7 @@ const buildArrayItem = (
   depth: number,
   path: string,
   includeKey: boolean
-): ItemData => {
+) => {
   const children = array.map((element, index) =>
     buildItemData(
       index.toString(),
@@ -68,7 +64,7 @@ const buildObjectItem = (
   depth: number,
   path: string,
   includeKey: boolean
-): ItemData => {
+) => {
   const children = Object.entries(obj).map(([childKey, childValue]) =>
     buildItemData(childKey, childValue, depth + 1, buildPath(path, key, includeKey), true)
   )
@@ -89,7 +85,7 @@ const buildValueItem = (
   depth: number,
   path: string,
   includeKey: boolean
-): ItemData => ({
+) => ({
   key,
   type: ItemType.VALUE,
   path: buildValuePath(path, key, includeKey),
@@ -115,21 +111,21 @@ const buildItemData = (
   return buildValueItem(key, value as PrimitiveTypes, depth, path, includeKey)
 }
 
-const parseJsonToItemData = (json: string, rootKey: string): ItemData => {
+const parseJsonToItemData = (jsonStr: string, key: string): ItemData => {
   try {
-    const data = JSON.parse(json)
+    const data = JSON.parse(jsonStr)
 
     if (isObject(data) || isArray(data)) {
-      return buildItemData(rootKey, data, 0, '', true)
+      return buildItemData(key, data, 0, '', true)
     }
 
-    return buildValueItem(rootKey, data as PrimitiveTypes, 0, '', true)
+    return buildValueItem(key, data as PrimitiveTypes, 0, '', true)
   } catch {
-    return buildValueItem(rootKey, json, 0, '', true)
+    return buildValueItem(key, jsonStr, 0, '', true)
   }
 }
 
-const parsed = computed((): ItemData => parseJsonToItemData(props.json, props.rootKey))
+const parsed = computed(() => parseJsonToItemData(json, rootKey))
 </script>
 
 <template>
