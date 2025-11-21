@@ -21,3 +21,25 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code
+# Version control: .claude/agents/, .claude/commands/, .claude/settings.json
+# Exclude: personal settings, sessions, history, and logs
+
+# Personal and local settings
+.claude/settings.local.json
+
+# Session data and history
+.claude/history/
+.claude/sessions/
+
+# Logs
+.claude/*.log
+
+# Development artifacts
+.claude/.dev/
+
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
