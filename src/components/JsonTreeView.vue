@@ -1,7 +1,7 @@
 <script lang="ts">
 export type ColorScheme = 'light' | 'dark'
 
-export interface Props {
+export type Props = {
   json: string
   rootKey?: string
   maxDepth?: number

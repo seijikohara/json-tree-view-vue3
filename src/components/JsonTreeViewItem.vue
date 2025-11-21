@@ -23,7 +23,7 @@ export type ItemData = {
   value?: PrimitiveTypes
 }
 
-export interface Props {
+export type Props = {
   data: ItemData
   maxDepth?: number
   canSelect?: boolean
