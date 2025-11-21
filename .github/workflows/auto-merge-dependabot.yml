@@ -1,0 +1,85 @@
+name: Auto-Merge Dependabot PRs
+
+on:
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+jobs:
+  auto-merge-dependabot:
+    name: Auto-Merge Dependabot PRs
+    runs-on: ubuntu-latest
+    if: |
+      github.actor == 'dependabot[bot]' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
+      github.event.pull_request.user.type == 'Bot'
+    permissions:
+      pull-requests: write
+      contents: write
+    timeout-minutes: 10
+
+    steps:
+      - name: Generate GitHub App Token
+        id: generate_token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.DEV_AUTOMATION_APP_ID }}
+          private-key: ${{ secrets.DEV_AUTOMATION_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          token: ${{ steps.generate_token.outputs.token }}
+
+      - name: Fetch Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: ${{ steps.generate_token.outputs.token }}
+          alert-lookup: true
+          compat-lookup: true
+
+      - name: Check for security vulnerabilities
+        if: |
+          steps.metadata.outputs.alert-state == 'OPEN' ||
+          (steps.metadata.outputs.cvss != '' && steps.metadata.outputs.cvss > 7.0)
+        run: |
+          echo "🚨 High severity security vulnerability detected (CVSS: ${{ steps.metadata.outputs.cvss }})"
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🚨 Security vulnerability detected (CVSS: ${{ steps.metadata.outputs.cvss }}). Skipping auto-merge for manual review."
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Auto-approve and merge
+        run: |
+          echo "✅ All checks passed. Auto-merging dependency update:"
+          echo "  - Package: ${{ steps.metadata.outputs.dependency-names }}"
+          echo "  - Update type: ${{ steps.metadata.outputs.update-type }}"
+          echo "  - Previous version: ${{ steps.metadata.outputs.previous-version }}"
+          echo "  - New version: ${{ steps.metadata.outputs.new-version }}"
+
+          # Auto-approve the PR
+          gh pr review ${{ github.event.pull_request.number }} --approve \
+            --body "✅ Auto-approved ${{ steps.metadata.outputs.update-type }} update for ${{ steps.metadata.outputs.dependency-names }}"
+
+          # Enable auto-merge
+          gh pr merge ${{ github.event.pull_request.number }} --auto --rebase
+          # Add success comment
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "🚀 Auto-merge enabled for this ${{ steps.metadata.outputs.update-type }} update. Will merge once all checks pass."
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Handle failures
+        if: failure()
+        run: |
+          echo "❌ Auto-merge failed"
+          gh pr comment ${{ github.event.pull_request.number }} \
+            --body "❌ Auto-merge failed. Please check the workflow logs and consider manual review."
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
