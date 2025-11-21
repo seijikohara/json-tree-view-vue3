@@ -34,8 +34,12 @@ export default defineConfig({
           vue: 'Vue'
         },
         assetFileNames: (assetInfo) => {
-          if (assetInfo.name === 'style.css') return 'style.css'
-          return assetInfo.name ?? 'asset'
+          // Ensure CSS is output as style.css to match package.json exports
+          const fileName = assetInfo.names?.[0]
+          if (fileName && /\.css$/.test(fileName)) {
+            return 'style.css'
+          }
+          return fileName ?? 'assets/[name]-[hash][extname]'
         }
       }
     }
