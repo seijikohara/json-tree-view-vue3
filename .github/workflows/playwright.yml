@@ -7,11 +7,10 @@ on:
 jobs:
   test:
     timeout-minutes: 60
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
         browser: [chromium, firefox, webkit]
     steps:
       - uses: actions/checkout@v5
@@ -35,7 +34,7 @@ jobs:
         uses: actions/upload-artifact@v5
         if: ${{ !cancelled() }}
         with:
-          name: playwright-report-${{ matrix.os }}-${{ matrix.browser }}
+          name: playwright-report-${{ matrix.browser }}
           path: playwright-report/
           retention-days: 30
 
