@@ -107,21 +107,18 @@ test.describe('JsonTreeView', () => {
     test('should show/hide children on toggle', async ({ page }) => {
       const lightTheme = page.locator('.theme-light')
       const toggleButton = lightTheme.locator('.data-key').first()
-      const valueKeys = lightTheme.locator('.value-key')
+      const firstChild = toggleButton.locator('..').locator('.json-view-item').first()
 
       // Initial state - children visible
-      const initialCount = await valueKeys.count()
-      expect.soft(initialCount).toBeGreaterThan(0)
+      await expect.soft(firstChild).toBeVisible()
 
       // Click to collapse
       await toggleButton.click()
-      const collapsedCount = await valueKeys.count()
-      expect.soft(collapsedCount).toBeLessThan(initialCount)
+      await expect.soft(firstChild).toBeHidden()
 
       // Click to expand
       await toggleButton.click()
-      const expandedCount = await valueKeys.count()
-      expect.soft(expandedCount).toBe(initialCount)
+      await expect.soft(firstChild).toBeVisible()
     })
   })
 
@@ -131,8 +128,8 @@ test.describe('JsonTreeView', () => {
       const stringValue = lightTheme.getByText('"text"')
 
       await expect.soft(stringValue).toBeVisible()
-      // String values should have specific color
-      await expect.soft(stringValue).toHaveCSS('color', /rgb\(\d+, \d+, \d+\)/)
+      // String values should have specific color (rgb or oklch format)
+      await expect.soft(stringValue).toHaveCSS('color', /(rgb\(\d+, \d+, \d+\)|oklch\([^)]+\))/)
     })
 
     test('should render number values', async ({ page }) => {
@@ -193,7 +190,7 @@ test.describe('JsonTreeView', () => {
       const lightTheme = page.locator('.theme-light')
       const items = lightTheme.locator('.json-view-item:not(.root-item)')
 
-      if (await items.count() > 0) {
+      if ((await items.count()) > 0) {
         await expect(items.first()).toHaveCSS('margin-left', '15px')
       }
     })
@@ -220,12 +217,8 @@ test.describe('JsonTreeView', () => {
       await expect.soft(lightTheme).toBeVisible()
       await expect.soft(darkTheme).toBeVisible()
 
-      const lightBg = await lightTheme.evaluate((el) =>
-        window.getComputedStyle(el).backgroundColor
-      )
-      const darkBg = await darkTheme.evaluate((el) =>
-        window.getComputedStyle(el).backgroundColor
-      )
+      const lightBg = await lightTheme.evaluate((el) => window.getComputedStyle(el).backgroundColor)
+      const darkBg = await darkTheme.evaluate((el) => window.getComputedStyle(el).backgroundColor)
 
       expect.soft(lightBg).not.toBe(darkBg)
     })

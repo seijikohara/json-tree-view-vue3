@@ -1,25 +1,18 @@
 import { fileURLToPath, URL } from 'node:url'
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { libInjectCss } from 'vite-plugin-lib-inject-css'
 
 const name = 'json-tree-view-vue3'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    vue(),
-  ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
+  plugins: [vue(), libInjectCss()],
   build: {
     lib: {
-      entry: 'src/components/index.ts',
+      entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       name,
-      fileName: (format) => `${name}.${format}.js`
+      formats: ['es', 'umd'],
+      fileName: (format) => (format === 'es' ? `${name}.js` : `${name}.${format}.cjs`)
     },
     sourcemap: true,
     rollupOptions: {
@@ -27,8 +20,12 @@ export default defineConfig({
       output: {
         globals: {
           vue: 'Vue'
+        },
+        assetFileNames: (assetInfo) => {
+          if (assetInfo.name === 'style.css') return 'style.css'
+          return assetInfo.name ?? 'asset'
         }
       }
     }
-  },
+  }
 })

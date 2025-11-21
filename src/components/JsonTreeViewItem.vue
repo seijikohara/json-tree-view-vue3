@@ -31,8 +31,8 @@ export type Props = {
 </script>
 
 <script setup lang="ts">
-import { computed, reactive } from 'vue'
-import { then, when } from 'switch-ts'
+import { computed, ref } from 'vue'
+import { getValueColorVariable, formatKey, getLengthString } from './utils'
 
 defineOptions({
   name: 'JsonTreeViewItem'
@@ -47,164 +47,216 @@ const emit = defineEmits<{
   (e: 'selected', value: SelectedData): void
 }>()
 
-const state = reactive({
-  open: props.data.depth < props.maxDepth
-})
+const isOpen = ref<boolean>(props.data.depth < props.maxDepth)
 
 const toggleOpen = (): void => {
-  state.open = !state.open
+  isOpen.value = !isOpen.value
 }
 
-const onClick = (data: ItemData): void =>
-  emit('selected', {
+const onClick = (data: ItemData): void => {
+  const selectedData: SelectedData = {
     key: data.key,
-    value: data.value,
+    value: data.value!,
     path: data.path
-  } as SelectedData)
+  }
+  emit('selected', selectedData)
+}
 
 const onSelected = (data: SelectedData): void => emit('selected', data)
 
-const getKey = (itemDate: ItemData): string => {
-  const keyValue = Number(itemDate.key)
-  return !isNaN(keyValue) ? `${itemDate.key}":` : `"${itemDate.key}":`
-}
+const chevronClasses = computed<Record<string, boolean>>(() => ({
+  'chevron-arrow': true,
+  opened: isOpen.value
+}))
 
-const getValueColor = (value: PrimitiveTypes): string =>
-  when(typeof value)
-    .is((v) => v === 'string', then('var(--jtv-string-color)'))
-    .is((v) => v === 'number', then('var(--jtv-number-color)'))
-    .is((v) => v === 'boolean', then('var(--jtv-boolean-color)'))
-    .is((v) => v === 'object', then('var(--jtv-null-color)')) // for null value
-    .default(then('var(--jtv-valueKey-color)'))
+const valueClasses = computed<Record<string, boolean>>(() => ({
+  'value-key': true,
+  'can-select': props.canSelect
+}))
 
-const classes = computed((): unknown => {
-  return {
-    'chevron-arrow': true,
-    opened: state.open
-  }
+const lengthString = computed<string>(() => {
+  const { length, type } = props.data
+  if (length === undefined) return ''
+
+  return getLengthString(length, type === ItemType.ARRAY)
 })
 
-const valueClasses = computed((): unknown => {
-  return {
-    'value-key': true,
-    'can-select': props.canSelect
-  }
-})
+const dataValue = computed<string>(() => JSON.stringify(props.data.value))
 
-const lengthString = computed((): string => {
-  const length = props.data.length
-  if (props.data.type === ItemType.ARRAY) {
-    return length === 1 ? `${length} element` : `${length} elements`
-  }
-  return length === 1 ? `${length} property` : `${length} properties`
-})
+const getItemKey = (item: ItemData): string => formatKey(item.key)
 
-const dataValue = computed((): string => JSON.stringify(props.data.value))
+const getValueColor = (value: PrimitiveTypes): string => getValueColorVariable(value)
 </script>
 
 <template>
   <div class="json-view-item">
-    <div v-if="data.type === ItemType.OBJECT || data.type === ItemType.ARRAY">
-      <button
-        class="data-key"
-        :aria-expanded="state.open ? 'true' : 'false'"
-        @click.stop="toggleOpen"
-      >
-        <div :class="classes" />
-        {{ data.key }}:
+    <!-- Container/Collection types (Object/Array) -->
+    <template v-if="data.type === ItemType.OBJECT || data.type === ItemType.ARRAY">
+      <button class="data-key" type="button" :aria-expanded="isOpen" @click.stop="toggleOpen">
+        <div :class="chevronClasses" aria-hidden="true" />
+        <span>{{ data.key }}:</span>
         <span class="properties">{{ lengthString }}</span>
       </button>
-      <div v-if="state.open">
-        <JsonTreeViewItem
-          v-for="child in data.children"
-          :key="getKey(child)"
-          :data="child"
-          :maxDepth="maxDepth"
-          :canSelect="canSelect"
-          @selected="onSelected"
-        />
-      </div>
-    </div>
-    <div
+
+      <Transition name="expand">
+        <div v-show="isOpen">
+          <JsonTreeViewItem
+            v-for="child in data.children"
+            :key="getItemKey(child)"
+            :data="child"
+            :max-depth="maxDepth"
+            :can-select="canSelect"
+            @selected="onSelected"
+          />
+        </div>
+      </Transition>
+    </template>
+
+    <!-- Primitive value type -->
+    <component
+      :is="canSelect ? 'button' : 'div'"
       v-if="data.type === ItemType.VALUE"
       :class="valueClasses"
-      :role="canSelect ? 'button' : undefined"
-      :tabindex="canSelect ? '0' : undefined"
-      @click="onClick(data)"
-      @keyup.enter="onClick(data)"
-      @keyup.space="onClick(data)"
+      :type="canSelect ? 'button' : null"
+      :tabindex="canSelect ? 0 : null"
+      @click="canSelect ? onClick(data) : null"
+      @keyup.enter="canSelect ? onClick(data) : null"
+      @keyup.space.prevent="canSelect ? onClick(data) : null"
     >
       <span class="value-key">{{ data.key }}:</span>
       <span :style="{ color: getValueColor(data.value as PrimitiveTypes) }">
         {{ dataValue }}
       </span>
-    </div>
+    </component>
   </div>
 </template>
 
 <style lang="scss">
-.json-view-item:not(.root-item) {
-  margin-left: 15px;
+/* Base item spacing */
+.json-view-item:where(:not(.root-item)) {
+  margin-inline-start: 15px;
 }
+
+/* Value key styling */
 .value-key {
+  /* Typography */
   color: var(--jtv-valueKey-color);
   font-weight: 600;
-  margin-left: 10px;
-  border-radius: 2px;
   white-space: nowrap;
-  padding: 5px 5px 5px 10px;
+
+  /* Layout */
+  display: inline-block;
+  padding-block: 5px;
+  padding-inline: 10px 5px;
+  margin-inline-start: 10px;
+  border-radius: 2px;
+
+  /* Interactive state */
   &.can-select {
     cursor: pointer;
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease;
+
+    &:is(:hover, :focus-visible) {
+      background-color: oklch(0 0 0 / 0.08);
     }
-    &:focus {
+
+    &:focus-visible {
       outline: 2px solid var(--jtv-hover-color);
+      outline-offset: 2px;
     }
   }
 }
+
+/* Data key button styling */
 .data-key {
-  font-size: 100%;
-  font-family: inherit;
-  border: 0;
-  background-color: transparent;
-  width: 100%;
+  /* Reset button styles */
+  all: unset;
+  box-sizing: border-box;
+
+  /* Typography */
   color: var(--jtv-key-color);
+  font-weight: 600;
+  white-space: nowrap;
+
+  /* Layout */
   display: flex;
   align-items: center;
+  inline-size: 100%;
+  padding-block: 5px;
+  padding-inline: 5px;
   border-radius: 2px;
-  font-weight: 600;
+
+  /* Interactive */
   cursor: pointer;
-  white-space: nowrap;
-  padding: 5px;
-  &:hover {
+  transition: background-color 0.2s ease;
+
+  &:is(:hover, :focus-visible) {
     background-color: var(--jtv-hover-color);
   }
-  &:focus {
+
+  &:focus-visible {
     outline: 2px solid var(--jtv-hover-color);
+    outline-offset: 2px;
   }
-  &::-moz-focus-inner {
-    border: 0;
-  }
+
+  /* Child element - properties count */
   .properties {
     font-weight: 300;
     opacity: 0.9;
-    margin-left: 4px;
+    margin-inline-start: calc(var(--jtv-spacing-unit, 4px) * 1);
     user-select: none;
   }
 }
+
+/* Chevron arrow indicator */
 .chevron-arrow {
+  /* Layout */
   flex-shrink: 0;
-  border-right: 2px solid var(--jtv-arrow-color);
-  border-bottom: 2px solid var(--jtv-arrow-color);
-  width: var(--jtv-arrow-size);
-  height: var(--jtv-arrow-size);
-  margin-right: 20px;
-  margin-left: 5px;
+  inline-size: var(--jtv-arrow-size);
+  block-size: var(--jtv-arrow-size);
+  margin-inline: 5px 20px;
+
+  /* Visual */
+  border-inline-end: 2px solid var(--jtv-arrow-color);
+  border-block-end: 2px solid var(--jtv-arrow-color);
   transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+
   &.opened {
-    margin-top: -3px;
+    margin-block-start: -3px;
     transform: rotate(45deg);
+  }
+}
+
+/* Expand/Collapse transition */
+.expand-enter-active,
+.expand-leave-active {
+  transition:
+    opacity 0.2s ease,
+    max-block-size 0.2s ease;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  opacity: 0;
+  max-block-size: 0;
+}
+
+.expand-enter-to,
+.expand-leave-from {
+  opacity: 1;
+  max-block-size: 1000px; /* Arbitrary large value */
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .value-key.can-select,
+  .data-key,
+  .chevron-arrow,
+  .expand-enter-active,
+  .expand-leave-active {
+    transition: none;
   }
 }
 </style>
