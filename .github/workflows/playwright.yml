@@ -31,7 +31,7 @@ jobs:
         run: npx playwright test --project=${{ matrix.browser }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: ${{ !cancelled() }}
         with:
           name: playwright-report-${{ matrix.browser }}
