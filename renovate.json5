@@ -1,0 +1,78 @@
+{
+  // Shared Renovate policy across seijikohara repositories.
+  // Schema: https://docs.renovatebot.com/renovate-schema.json
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    // Maintainer-recommended superset of config:recommended. Pins GitHub Action
+    // and Docker digests, enables config migration, dev-dependency pinning,
+    // weekly lock file maintenance, and the npm minimum-release-age cooldown.
+    "config:best-practices",
+    // Conventional Commits with a unified `chore(deps): ...` subject.
+    ":semanticCommits",
+    ":semanticCommitTypeAll(chore)",
+    ":semanticCommitScope(deps)",
+  ],
+  timezone: "Asia/Tokyo",
+  schedule: ["before 9am on monday"],
+  labels: ["dependencies"],
+  // Keep update branches rebased on main and merge via rebase once CI passes.
+  rebaseWhen: "behind-base-branch",
+  platformAutomerge: true,
+  automergeStrategy: "rebase",
+  // Hold every release for 3 days so a hijacked publish cannot ride automerge on day zero.
+  minimumReleaseAge: "3 days",
+  // Auto-merge the weekly lock file refresh together with regular updates.
+  lockFileMaintenance: { automerge: true },
+  packageRules: [
+    {
+      description: "Auto-merge non-major updates once CI passes",
+      matchUpdateTypes: ["minor", "patch", "pin", "digest"],
+      automerge: true,
+    },
+    {
+      description: "Hold major updates for manual review via the dependency dashboard",
+      matchUpdateTypes: ["major"],
+      automerge: false,
+      dependencyDashboardApproval: true,
+      addLabels: ["major"],
+    },
+    {
+      description: "Group and label GitHub Actions updates",
+      matchManagers: ["github-actions"],
+      groupName: "github-actions",
+      addLabels: ["github-actions"],
+    },
+    {
+      description: "Group the Vue framework and its tooling",
+      groupName: "vue",
+      matchPackageNames: ["vue", "vue-router", "vue-tsc", "@vue/*", "@vitejs/plugin-vue"],
+    },
+    {
+      description: "Group the build toolchain",
+      groupName: "build toolchain",
+      matchPackageNames: ["vite", "vite-plugin-*", "typescript", "sass"],
+    },
+    {
+      description: "Group linting and formatting tools",
+      groupName: "linting and formatting",
+      matchPackageNames: ["eslint", "@eslint/*", "eslint-plugin-*", "eslint-config-*", "prettier", "typescript-eslint"],
+    },
+    {
+      description: "Group Playwright packages",
+      groupName: "playwright",
+      matchPackageNames: ["playwright", "@playwright/*"],
+    },
+    {
+      description: "Group TypeScript type definitions",
+      groupName: "type definitions",
+      matchPackageNames: ["@types/*", "@tsconfig/*"],
+    },
+  ],
+  vulnerabilityAlerts: {
+    description: "Raise security fixes immediately and require manual review",
+    schedule: ["at any time"],
+    minimumReleaseAge: null,
+    addLabels: ["security"],
+    automerge: false,
+  },
+}
