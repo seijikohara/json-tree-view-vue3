@@ -11,6 +11,9 @@
     ":semanticCommits",
     ":semanticCommitTypeAll(chore)",
     ":semanticCommitScope(deps)",
+    // Keep npm semver ranges (the committed lockfile gives reproducibility); overrides
+    // best-practices dev-dependency pinning. Action digest pinning is unaffected.
+    ":preserveSemverRanges",
   ],
   timezone: "Asia/Tokyo",
   schedule: ["before 9am on monday"],
@@ -26,7 +29,7 @@
   packageRules: [
     {
       description: "Auto-merge non-major updates once CI passes",
-      matchUpdateTypes: ["minor", "patch", "pin", "digest"],
+      matchUpdateTypes: ["minor", "patch", "pin", "pinDigest", "digest"],
       automerge: true,
     },
     {
