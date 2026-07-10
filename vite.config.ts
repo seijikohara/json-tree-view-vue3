@@ -28,6 +28,7 @@ export default defineConfig({
   ],
   build: {
     target: 'baseline-widely-available',
+    copyPublicDir: false,
     lib: {
       entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
       formats: ['es'],

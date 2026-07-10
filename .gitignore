@@ -38,3 +38,7 @@ pnpm-debug.log*
 
 # Development artifacts
 .claude/.dev/
+
+# Packaging and browser-test artifacts
+*.tgz
+__screenshots__/
