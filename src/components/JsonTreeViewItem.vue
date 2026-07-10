@@ -89,16 +89,8 @@ const getValueColor = (value: PrimitiveTypes) => getValueColorVariable(value)
   <div class="json-view-item">
     <!-- Container/Collection types (Object/Array) -->
     <template v-if="data.type === ItemType.OBJECT || data.type === ItemType.ARRAY">
-      <button
-        class="data-key"
-        type="button"
-        :aria-expanded="isOpen"
-        @click.stop="toggleOpen"
-      >
-        <div
-          :class="chevronClasses"
-          aria-hidden="true"
-        />
+      <button class="data-key" type="button" :aria-expanded="isOpen" @click.stop="toggleOpen">
+        <div :class="chevronClasses" aria-hidden="true" />
         <span>{{ data.key }}:</span>
         <span class="properties">{{ lengthString }}</span>
       </button>

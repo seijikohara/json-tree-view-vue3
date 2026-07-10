@@ -2,38 +2,30 @@
   "name": "json-tree-view-vue3",
   "version": "2.0.0",
   "description": "JSON tree rendering Vue3 component",
+  "keywords": [
+    "json",
+    "tree",
+    "vue3"
+  ],
+  "homepage": "https://github.com/seijikohara/json-tree-view-vue3#readme",
+  "bugs": {
+    "url": "https://github.com/seijikohara/json-tree-view-vue3/issues"
+  },
+  "license": "MIT",
+  "author": "Seiji Kohara <sage.0118@gmail.com> (https://github.com/seijikohara)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/seijikohara/json-tree-view-vue3.git"
   },
-  "keywords": [
-    "vue3",
-    "json",
-    "tree"
-  ],
-  "author": "Seiji Kohara <sage.0118@gmail.com> (https://github.com/seijikohara)",
-  "license": "MIT",
-  "packageManager": "pnpm@11.11.0",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "11.11.0",
-      "onFail": "download"
-    }
-  },
-  "bugs": {
-    "url": "https://github.com/seijikohara/json-tree-view-vue3/issues"
-  },
-  "homepage": "https://github.com/seijikohara/json-tree-view-vue3#readme",
-  "type": "module",
-  "main": "./dist/json-tree-view-vue3.js",
-  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
+  "type": "module",
   "sideEffects": [
     "**/*.css"
   ],
+  "main": "./dist/json-tree-view-vue3.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -86,5 +78,13 @@
   },
   "peerDependencies": {
     "vue": ">=3.2.0"
-  }
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.11.0",
+      "onFail": "download"
+    }
+  },
+  "packageManager": "pnpm@11.11.0"
 }

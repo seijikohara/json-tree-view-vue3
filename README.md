@@ -21,10 +21,10 @@ npm install json-tree-view-vue3
 
 ```vue
 <script setup lang="ts">
-import { JsonTreeView } from "json-tree-view-vue3";
-import "json-tree-view-vue3/dist/style.css";
+import { JsonTreeView } from 'json-tree-view-vue3'
+import 'json-tree-view-vue3/dist/style.css'
 
-const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`;
+const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
 </script>
 
 <template>
@@ -40,12 +40,12 @@ const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":[
 
 ### Props
 
-| Property      | Type     | Required | Default   | Description                                                      |
-|---------------|----------|----------|-----------|------------------------------------------------------------------|
-| `json`        | `string` | Yes      | -         | A valid JSON string to be rendered as a tree structure           |
-| `rootKey`     | `string` | No       | `"/"`     | The label displayed for the root node of the tree                |
-| `maxDepth`    | `number` | No       | `1`       | The initial depth level to which the tree will be expanded       |
-| `colorScheme` | `string` | No       | `"light"` | Visual theme of the component. Accepts `"light"` or `"dark"`     |
+| Property      | Type     | Required | Default   | Description                                                  |
+| ------------- | -------- | -------- | --------- | ------------------------------------------------------------ |
+| `json`        | `string` | Yes      | -         | A valid JSON string to be rendered as a tree structure       |
+| `rootKey`     | `string` | No       | `"/"`     | The label displayed for the root node of the tree            |
+| `maxDepth`    | `number` | No       | `1`       | The initial depth level to which the tree will be expanded   |
+| `colorScheme` | `string` | No       | `"light"` | Visual theme of the component. Accepts `"light"` or `"dark"` |
 
 ### Events
 
@@ -54,11 +54,12 @@ const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":[
 Emitted when a user selects a value in the tree.
 
 **Payload Type:**
+
 ```typescript
 {
-  key: string;      // The key of the selected node
-  value: PrimitiveTypes;  // The value of the selected node (string, number, boolean, or null)
-  path: string;     // The full path to the selected node
+  key: string // The key of the selected node
+  value: PrimitiveTypes // The value of the selected node (string, number, boolean, or null)
+  path: string // The full path to the selected node
 }
 ```
 
@@ -70,20 +71,20 @@ The component uses CSS custom properties (variables) for theming, allowing you t
 
 ```css
 /* Color palette */
---jtv-key-color: oklch(0.55 0.15 240);        /* Object/Array key color */
---jtv-valueKey-color: oklch(0.25 0.05 210);   /* Primitive value key color */
---jtv-string-color: oklch(0.6 0.12 230);      /* String value color */
---jtv-number-color: oklch(0.65 0.1 180);      /* Number value color */
---jtv-boolean-color: oklch(0.55 0.15 40);     /* Boolean value color */
---jtv-null-color: oklch(0.55 0.12 280);       /* Null value color */
+--jtv-key-color: oklch(0.55 0.15 240); /* Object/Array key color */
+--jtv-valueKey-color: oklch(0.25 0.05 210); /* Primitive value key color */
+--jtv-string-color: oklch(0.6 0.12 230); /* String value color */
+--jtv-number-color: oklch(0.65 0.1 180); /* Number value color */
+--jtv-boolean-color: oklch(0.55 0.15 40); /* Boolean value color */
+--jtv-null-color: oklch(0.55 0.12 280); /* Null value color */
 
 /* UI colors */
---jtv-arrow-color: oklch(0.3 0 0);            /* Expand/collapse arrow color */
---jtv-hover-color: oklch(0 0 0 / 0.1);        /* Hover background color */
+--jtv-arrow-color: oklch(0.3 0 0); /* Expand/collapse arrow color */
+--jtv-hover-color: oklch(0 0 0 / 0.1); /* Hover background color */
 
 /* Dimensions */
---jtv-arrow-size: 6px;                        /* Size of the expand/collapse arrow */
---jtv-spacing-unit: 4px;                      /* Base spacing unit */
+--jtv-arrow-size: 6px; /* Size of the expand/collapse arrow */
+--jtv-spacing-unit: 4px; /* Base spacing unit */
 ```
 
 ### Custom Styling Example
