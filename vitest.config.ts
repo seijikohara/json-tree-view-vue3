@@ -2,7 +2,11 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import { playwright } from '@vitest/browser-playwright'
 
-const allBrowsers = [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }]
+const allBrowsers = [
+  { browser: 'chromium', name: 'chromium' },
+  { browser: 'firefox', name: 'firefox' },
+  { browser: 'webkit', name: 'webkit' }
+]
 
 export default defineConfig({
   plugins: [vue()],
@@ -14,7 +18,7 @@ export default defineConfig({
       headless: true,
       // Locally, run only chromium for a fast feedback loop; CI selects each
       // browser explicitly via `--project=<name>` and needs all three defined.
-      instances: process.env.CI ? allBrowsers : [{ browser: 'chromium' }]
+      instances: process.env.CI ? allBrowsers : [{ browser: 'chromium', name: 'chromium' }]
     }
   }
 })
