@@ -13,6 +13,14 @@
   ],
   "author": "Seiji Kohara <sage.0118@gmail.com> (https://github.com/seijikohara)",
   "license": "MIT",
+  "packageManager": "pnpm@11.11.0",
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.11.0",
+      "onFail": "download"
+    }
+  },
   "bugs": {
     "url": "https://github.com/seijikohara/json-tree-view-vue3/issues"
   },
@@ -44,8 +52,8 @@
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write src/",
-    "deps:update": "npx npm-check-updates -u && npm install",
-    "deps:check": "npx npm-check-updates",
+    "deps:update": "taze -w && pnpm install",
+    "deps:check": "taze",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
@@ -54,7 +62,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.56.1",
-    "@types/node": "^26.0.0",
+    "@types/node": "^26.1.1",
     "@vitejs/plugin-vue": "^6.0.2",
     "@vue/eslint-config-prettier": "^10.2.0",
     "@vue/eslint-config-typescript": "^14.6.0",
@@ -64,6 +72,7 @@
     "eslint-plugin-vue": "^10.5.1",
     "prettier": "^3.6.2",
     "sass": "^1.94.2",
+    "taze": "^19.14.1",
     "typescript": "~6.0.2",
     "vite": "^8.0.1",
     "vite-plugin-lib-inject-css": "^2.2.2",
