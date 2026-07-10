@@ -2,8 +2,8 @@
 
 [![npm version](https://img.shields.io/npm/v/json-tree-view-vue3.svg)](https://www.npmjs.com/package/json-tree-view-vue3)
 [![CI](https://img.shields.io/github/actions/workflow/status/seijikohara/json-tree-view-vue3/npm-ci.yml?branch=main&label=CI)](https://github.com/seijikohara/json-tree-view-vue3/actions/workflows/npm-ci.yml)
-[![E2E Tests](https://img.shields.io/github/actions/workflow/status/seijikohara/json-tree-view-vue3/playwright.yml?branch=main&label=E2E)](https://github.com/seijikohara/json-tree-view-vue3/actions/workflows/playwright.yml)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
+[![Browser Tests](https://img.shields.io/github/actions/workflow/status/seijikohara/json-tree-view-vue3/browser-tests.yml?branch=main&label=Browser+Tests)](https://github.com/seijikohara/json-tree-view-vue3/actions/workflows/browser-tests.yml)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue.svg)](https://www.typescriptlang.org/)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/json-tree-view-vue3.svg)](https://bundlephobia.com/package/json-tree-view-vue3)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -17,12 +17,16 @@ Inspired by [vue-json-component](https://www.npmjs.com/package/vue-json-componen
 npm install json-tree-view-vue3
 ```
 
+> `json-tree-view-vue3` v2 is an ESM-only package (the UMD build has been
+> removed). Use `import` syntax; on CommonJS, Node.js >= 20.19 can load it
+> via `require()` (require(esm)).
+
 ## Usage
 
 ```vue
 <script setup lang="ts">
 import { JsonTreeView } from 'json-tree-view-vue3'
-import 'json-tree-view-vue3/dist/style.css'
+import 'json-tree-view-vue3/style.css'
 
 const json = `{"string":"text","number":123,"boolean":true,"null":null,"array":["A","B","C"],"object":{"prop1":"value1","nestedObject":{"prop2":"value2"}}}`
 </script>
