@@ -31,7 +31,7 @@ export default [
       'vue/multi-word-component-names': 'warn',
       // Template layout is oxfmt's domain. This rule wraps attributes based on
       // count, while oxfmt wraps based on printWidth, so the two can disagree
-      // on lines that fit within 100 chars and no numeric retuning reconciles
+      // on lines that fit within 100 chars and no numeric tuning reconciles
       // them. Disabling it restores the pre-migration behavior, where
       // @vue/eslint-config-prettier turned off formatter-conflicting layout
       // rules like this one.

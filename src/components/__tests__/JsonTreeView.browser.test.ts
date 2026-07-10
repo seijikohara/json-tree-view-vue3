@@ -22,7 +22,12 @@ const renderLightTree = () =>
 
 const renderDarkTree = () => render(JsonTreeView, { props: { json, colorScheme: 'dark' } })
 
-const styleOf = (el: Element | null | undefined) => getComputedStyle(el as HTMLElement)
+const styleOf = (el: Element | null | undefined, selectorForError: string): CSSStyleDeclaration => {
+  if (!el) {
+    throw new Error(`styleOf: element not found for ${selectorForError}`)
+  }
+  return getComputedStyle(el)
+}
 
 describe('JsonTreeView', () => {
   describe('Color scheme', () => {
@@ -135,7 +140,9 @@ describe('JsonTreeView', () => {
       const stringValue = screen.getByText('"text"')
 
       await expect.element(stringValue).toBeVisible()
-      expect(styleOf(stringValue.element()).color).toMatch(/(rgb\(\d+, \d+, \d+\)|oklch\([^)]+\))/)
+      expect(styleOf(stringValue.element(), `getByText('"text"')`).color).toMatch(
+        /(rgb\(\d+, \d+, \d+\)|oklch\([^)]+\))/
+      )
     })
 
     test('renders number values', async () => {
@@ -171,7 +178,7 @@ describe('JsonTreeView', () => {
   describe('CSS classes and styling', () => {
     test('data-key has the expected styling', async () => {
       const { container } = await renderLightTree()
-      const style = styleOf(container.querySelector('.data-key'))
+      const style = styleOf(container.querySelector('.data-key'), '.data-key')
 
       expect(style.cursor).toBe('pointer')
       expect(style.fontWeight).toBe('600')
@@ -179,7 +186,7 @@ describe('JsonTreeView', () => {
 
     test('value-key has the expected styling', async () => {
       const { container } = await renderLightTree()
-      const style = styleOf(container.querySelector('.value-key'))
+      const style = styleOf(container.querySelector('.value-key'), '.value-key')
 
       expect(style.fontWeight).toBe('600')
       expect(style.marginLeft).toBe('10px')
@@ -190,7 +197,7 @@ describe('JsonTreeView', () => {
       const items = container.querySelectorAll('.json-view-item:not(.root-item)')
 
       if (items.length > 0) {
-        expect(styleOf(items[0]).marginLeft).toBe('15px')
+        expect(styleOf(items[0], '.json-view-item:not(.root-item)').marginLeft).toBe('15px')
       }
     })
   })
@@ -208,8 +215,11 @@ describe('JsonTreeView', () => {
       const light = await renderLightTree()
       const dark = await renderDarkTree()
 
-      const lightColor = styleOf(light.container.querySelector('.data-key')).color
-      const darkColor = styleOf(dark.container.querySelector('.data-key')).color
+      const lightColor = styleOf(
+        light.container.querySelector('.data-key'),
+        '.data-key (light)'
+      ).color
+      const darkColor = styleOf(dark.container.querySelector('.data-key'), '.data-key (dark)').color
 
       expect(lightColor).not.toBe(darkColor)
     })
