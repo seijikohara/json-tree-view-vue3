@@ -30,9 +30,9 @@ export const formatKey = (key: string) => {
   return Number.isNaN(numericKey) ? `"${key}":` : `${key}":`
 }
 
-export const getLengthString = (length: number, isArray: boolean) => {
-  const unit = isArray ? 'element' : 'property'
-  const pluralUnit = isArray ? 'elements' : 'properties'
+export const getLengthString = (length: number, isArrayType: boolean) => {
+  const unit = isArrayType ? 'element' : 'property'
+  const pluralUnit = isArrayType ? 'elements' : 'properties'
   return length === 1 ? `${length} ${unit}` : `${length} ${pluralUnit}`
 }
 

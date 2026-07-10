@@ -39,7 +39,7 @@ export default defineConfig({
       output: {
         assetFileNames: (assetInfo) => {
           const fileName = assetInfo.names?.[0]
-          if (fileName && /\.css$/.test(fileName)) {
+          if (fileName && fileName.endsWith('.css')) {
             return 'style.css'
           }
           return fileName ?? 'assets/[name]-[hash][extname]'

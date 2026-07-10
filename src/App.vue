@@ -20,7 +20,11 @@ const onSelected = (event: SelectedData) => {
     />
   </div>
   <div class="theme-dark">
-    <JsonTreeView color-scheme="dark" :json="json" @selected="onSelected" />
+    <JsonTreeView
+      color-scheme="dark"
+      :json="json"
+      @selected="onSelected"
+    />
   </div>
 </template>
 
