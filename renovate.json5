@@ -56,21 +56,14 @@
       matchPackageNames: ['vite', 'vite-plugin-*', 'typescript', 'sass']
     },
     {
-      description: 'Group linting and formatting tools',
-      groupName: 'linting and formatting',
-      matchPackageNames: [
-        'eslint',
-        '@eslint/*',
-        'eslint-plugin-*',
-        'eslint-config-*',
-        'prettier',
-        'typescript-eslint'
-      ]
+      description: 'Group the oxc toolchain',
+      groupName: 'oxc',
+      matchPackageNames: ['oxlint', 'oxfmt', 'eslint-plugin-oxlint', '@oxlint/*']
     },
     {
-      description: 'Group Playwright packages',
-      groupName: 'playwright',
-      matchPackageNames: ['playwright', '@playwright/*']
+      description: 'Group the test toolchain',
+      groupName: 'vitest',
+      matchPackageNames: ['vitest', '@vitest/*', 'vitest-browser-vue', 'playwright']
     },
     {
       description: 'Group TypeScript type definitions',
