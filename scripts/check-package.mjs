@@ -3,8 +3,10 @@
 // `attw --pack .` shells out to `npm pack`, which fails under pnpm-only
 // devEngines with EBADDEVENGINES (Wave 1 finding), so this script builds
 // the tarball with `pnpm pack` at a fixed filename and hands it to attw
-// directly, propagating whichever step's exit code failed; a try/finally
-// cleans up the tarball regardless of which step fails.
+// directly, propagating whichever step's exit code failed. A try/finally
+// cleans up the tarball if pack or attw fails; a leading cleanup also
+// clears any tarball left by an interrupted prior run, so the guarantee
+// holds even when publint itself fails early.
 //
 // `./style.css` is excluded from attw's entrypoint analysis: it is a
 // CSS-only side-effect export (`import 'json-tree-view-vue3/style.css'`),
@@ -17,6 +19,10 @@ import { spawnSync } from 'node:child_process'
 import { rmSync } from 'node:fs'
 
 const TARBALL = 'package.tgz'
+
+// Clears a tarball left behind by an interrupted prior run up front,
+// since the try/finally below only runs once publint has passed.
+rmSync(TARBALL, { force: true })
 
 const publint = spawnSync('pnpm', ['exec', 'publint'], { stdio: 'inherit' })
 
