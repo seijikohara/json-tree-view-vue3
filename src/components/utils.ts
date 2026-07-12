@@ -25,10 +25,7 @@ export const getValueColorVariable = (value: PrimitiveTypes) => {
   return typeColorMap[typeof value] ?? 'var(--jtv-valueKey-color)'
 }
 
-export const formatKey = (key: string) => {
-  const numericKey = Number(key)
-  return Number.isNaN(numericKey) ? `"${key}":` : `${key}":`
-}
+export const formatKey = (key: string) => `"${key}":`
 
 export const getLengthString = (length: number, isArrayType: boolean) => {
   const unit = isArrayType ? 'element' : 'property'
