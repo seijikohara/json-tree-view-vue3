@@ -35,7 +35,7 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "prepare": "lefthook install",
+    "prepare": "lefthook install || true",
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
