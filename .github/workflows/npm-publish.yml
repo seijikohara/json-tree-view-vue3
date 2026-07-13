@@ -137,6 +137,12 @@ jobs:
           fi
           echo "✅ Built package reports version $VERSION"
 
+      - name: Verify package surface
+        run: |
+          # Gate the release on the same publint + attw checks CI enforces, so a
+          # packaging regression (broken exports/types) aborts before publish.
+          pnpm check:package
+
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
@@ -164,7 +170,7 @@ jobs:
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing with tag: $PRERELEASE_TAG"
           fi
-          npm publish $PUBLISH_OPTS
+          pnpm publish $PUBLISH_OPTS
           echo "✅ Published json-tree-view-vue3@$VERSION"
 
   finalize:
