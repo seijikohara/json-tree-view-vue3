@@ -39,7 +39,6 @@ pnpm-debug.log*
 # Development artifacts
 .claude/.dev/
 
-# Playwright
-/test-results/
-/playwright-report/
-/playwright/.cache/
+# Packaging and browser-test artifacts
+*.tgz
+__screenshots__/
