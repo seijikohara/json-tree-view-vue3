@@ -146,13 +146,6 @@ jobs:
       - name: Publish
         env:
           VERSION: ${{ needs.validate.outputs.version }}
-          # Token auth (granular access token with publish rights to this
-          # package). npm trusted publishing (OIDC) still requires linking
-          # this package to the workflow in npmjs.com's settings; until that
-          # is configured, the token authenticates the publish, while
-          # `--provenance` independently attaches a provenance attestation
-          # via the workflow's id-token permission.
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
@@ -165,7 +158,10 @@ jobs:
               PRERELEASE_TAG="next"
             fi
           fi
-          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          # Trusted publishing (OIDC): npm exchanges the workflow id-token for
+          # a short-lived, package-scoped registry credential, so no
+          # NODE_AUTH_TOKEN is needed. Provenance is attached automatically.
+          PUBLISH_OPTS="--provenance --access public"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing with tag: $PRERELEASE_TAG"
