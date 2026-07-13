@@ -59,6 +59,17 @@ jobs:
           fi
           echo "✅ Tag v$INPUT_VERSION does not exist"
 
+      - name: Verify committed version matches input
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          COMMITTED=$(node -p "require('./package.json').version")
+          if [ "$COMMITTED" != "$INPUT_VERSION" ]; then
+            echo "::error::package.json is at version $COMMITTED but you requested $INPUT_VERSION. Commit the version bump to package.json first, then dispatch with the matching version."
+            exit 1
+          fi
+          echo "✅ Committed package.json version matches: $INPUT_VERSION"
+
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -105,15 +116,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Set package version
-        env:
-          VERSION: ${{ needs.validate.outputs.version }}
-        run: |
-          # The source ships at the release version, so `npm version` is often
-          # a no-op; `--allow-same-version` keeps it from erroring in that case.
-          pnpm exec npm version "$VERSION" --no-git-tag-version --allow-same-version
-          echo "✅ Set package version to $VERSION"
 
       - name: Build package
         run: pnpm build
