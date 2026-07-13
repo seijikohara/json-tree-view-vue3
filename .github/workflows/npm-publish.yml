@@ -1,29 +1,199 @@
-name: Node.js Publish package
+name: Publish to npm
 
 on:
-  push:
-    tags:
-      - 'v*'
-  release:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 1.0.0, 1.0.0-beta.1)'
+        required: true
+        type: string
+      dry-run:
+        description: 'Dry run (validate without publishing)'
+        required: false
+        type: boolean
+        default: false
+      skip-git:
+        description: 'Skip git tag and GitHub Release creation'
+        required: false
+        type: boolean
+        default: false
 
-concurrency:
-  group: publish-${{ github.ref }}
-  cancel-in-progress: false
+# Required for npm trusted publishing (OIDC)
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
-  publish-npm:
+  validate:
+    name: Validate
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.validate-version.outputs.version }}
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
-      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
-        with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org/
-          cache: 'pnpm'
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
-      - run: pnpm publish --no-git-checks
+      - name: Validate version format
+        id: validate-version
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          # Validate semver format (including prerelease)
+          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
+            echo "::error::Invalid version format: $INPUT_VERSION"
+            echo "Version must be in semver format (e.g., 1.0.0, 1.0.0-beta.1)"
+            exit 1
+          fi
+          echo "version=$INPUT_VERSION" >> "$GITHUB_OUTPUT"
+          echo "✅ Version format valid: $INPUT_VERSION"
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Check if tag exists
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if git tag -l "v$INPUT_VERSION" | grep -q .; then
+            echo "::error::Tag v$INPUT_VERSION already exists"
+            exit 1
+          fi
+          echo "✅ Tag v$INPUT_VERSION does not exist"
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .node-version
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run tests
+        run: pnpm exec vitest run --project=chromium
+
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs: [validate, test]
+    if: ${{ !inputs.dry-run }}
+    environment: npm
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version-file: .node-version
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Set package version
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          # The source ships at the release version, so `npm version` is often
+          # a no-op; `--allow-same-version` keeps it from erroring in that case.
+          pnpm exec npm version "$VERSION" --no-git-tag-version --allow-same-version
+          echo "✅ Set package version to $VERSION"
+
+      - name: Build package
+        run: pnpm build
+
+      - name: Verify built package version
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          # Guard against publishing a stale or mismatched build: package.json
+          # must report the release version. A mismatch here aborts the
+          # release before publish, so a wrong-version tarball never reaches
+          # the registry.
+          built=$(node -p "require('./package.json').version")
+          if [ "$built" != "$VERSION" ]; then
+            echo "::error::Built version '$built' does not match release version '$VERSION'"
+            exit 1
+          fi
+          echo "✅ Built package reports version $VERSION"
+
+      - name: Publish
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+          # Token auth (granular access token with publish rights to this
+          # package). npm trusted publishing (OIDC) still requires linking
+          # this package to the workflow in npmjs.com's settings; until that
+          # is configured, the token authenticates the publish, while
+          # `--provenance` independently attaches a provenance attestation
+          # via the workflow's id-token permission.
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+        run: |
+          PRERELEASE_TAG=""
+          if [[ "$VERSION" == *-* ]]; then
+            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+          fi
+          PUBLISH_OPTS="--provenance --access public --no-git-checks"
+          if [ -n "$PRERELEASE_TAG" ]; then
+            PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
+            echo "📌 Publishing with tag: $PRERELEASE_TAG"
+          fi
+          npm publish $PUBLISH_OPTS
+          echo "✅ Published json-tree-view-vue3@$VERSION"
+
+  finalize:
+    name: Finalize
+    runs-on: ubuntu-latest
+    needs: [validate, publish]
+    if: ${{ !inputs.dry-run && !inputs.skip-git }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
+
+      - name: Create and push tag
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          # No version-bump commit lands on main; the tag is the
+          # load-bearing artifact and points at the commit that was actually
+          # published.
+          git tag "v$VERSION"
+          git push origin "v$VERSION"
+          echo "✅ Tagged v$VERSION"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b # v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: v${{ needs.validate.outputs.version }}
+          name: v${{ needs.validate.outputs.version }}
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(needs.validate.outputs.version, '-') }}
+
+      - name: Summary
+        env:
+          VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          echo "## 📦 Publish Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🚀 **Mode:** Published" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** \`$VERSION\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "[npm: json-tree-view-vue3](https://www.npmjs.com/package/json-tree-view-vue3)" >> $GITHUB_STEP_SUMMARY
