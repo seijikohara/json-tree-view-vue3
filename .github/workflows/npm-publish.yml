@@ -170,7 +170,7 @@ jobs:
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
             echo "📌 Publishing with tag: $PRERELEASE_TAG"
           fi
-          pnpm publish $PUBLISH_OPTS
+          npm publish $PUBLISH_OPTS
           echo "✅ Published json-tree-view-vue3@$VERSION"
 
   finalize:

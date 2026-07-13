@@ -1,3 +1,4 @@
+pmOnFail: ignore
 minimumReleaseAgeExclude:
   - '@arethetypeswrong/cli@0.18.5'
   - '@arethetypeswrong/core@0.18.5'
