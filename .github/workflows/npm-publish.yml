@@ -18,11 +18,6 @@ on:
         type: boolean
         default: false
 
-# Required for npm trusted publishing (OIDC)
-permissions:
-  contents: write
-  id-token: write
-
 concurrency:
   group: publish-${{ github.workflow }}
   cancel-in-progress: false
@@ -40,7 +35,7 @@ jobs:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
           # Validate semver format (including prerelease)
-          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
+          if [[ ! "$INPUT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$ ]]; then
             echo "::error::Invalid version format: $INPUT_VERSION"
             echo "Version must be in semver format (e.g., 1.0.0, 1.0.0-beta.1)"
             exit 1
@@ -105,6 +100,9 @@ jobs:
     needs: [validate, test]
     if: ${{ !inputs.dry-run }}
     environment: npm
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
@@ -152,7 +150,14 @@ jobs:
         run: |
           PRERELEASE_TAG=""
           if [[ "$VERSION" == *-* ]]; then
-            PRERELEASE_TAG=$(echo "$VERSION" | sed 's/.*-\([a-zA-Z]*\).*/\1/')
+            # First dot-separated segment of the prerelease identifier.
+            PRERELEASE_TAG="${VERSION#*-}"
+            PRERELEASE_TAG="${PRERELEASE_TAG%%.*}"
+            # A prerelease must never land on the `latest` dist-tag; fall back to `next`
+            # when the identifier is empty or purely numeric (e.g. 1.0.0-1).
+            if [[ -z "$PRERELEASE_TAG" || "$PRERELEASE_TAG" =~ ^[0-9]+$ ]]; then
+              PRERELEASE_TAG="next"
+            fi
           fi
           PUBLISH_OPTS="--provenance --access public --no-git-checks"
           if [ -n "$PRERELEASE_TAG" ]; then
@@ -167,6 +172,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate, publish]
     if: ${{ !inputs.dry-run && !inputs.skip-git }}
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
