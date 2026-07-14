@@ -160,7 +160,8 @@ jobs:
           fi
           # Trusted publishing (OIDC): npm exchanges the workflow id-token for
           # a short-lived, package-scoped registry credential, so no
-          # NODE_AUTH_TOKEN is needed. Provenance is attached automatically.
+          # NODE_AUTH_TOKEN is needed. `--provenance` attaches a provenance
+          # attestation via the same id-token.
           PUBLISH_OPTS="--provenance --access public"
           if [ -n "$PRERELEASE_TAG" ]; then
             PUBLISH_OPTS="$PUBLISH_OPTS --tag $PRERELEASE_TAG"
