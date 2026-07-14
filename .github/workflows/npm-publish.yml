@@ -114,7 +114,10 @@ jobs:
         with:
           node-version-file: .node-version
           registry-url: 'https://registry.npmjs.org'
-          cache: 'pnpm'
+          # OIDC trusted publishing needs a clean credential state; a restored
+          # setup-node cache leaves a dummy NODE_AUTH_TOKEN in .npmrc that makes
+          # npm skip the OIDC token exchange. Disable caching in this job only.
+          package-manager-cache: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
