@@ -1,10 +1,13 @@
 pmOnFail: ignore
 
-# Renovate resolves and pins every dependency itself, so CI does not re-apply
-# `minimumReleaseAge` to entries the lockfile already records. Without this
-# setting `pnpm install --frozen-lockfile` rejects the lockfile Renovate wrote
-# whenever a release is under a day old. Resolution-time cooldown and
-# Renovate's own three-day hold remain in place.
+# Trust the resolutions the lockfile already records. The setting applies to
+# every install, local and CI alike, so none of them re-apply
+# `minimumReleaseAge` to lockfile entries. Renovate writes the lockfile and
+# opens the pull request within hours of a publish, so without this setting
+# `pnpm install --frozen-lockfile` rejects the lockfile Renovate just produced.
+# The cooldown still applies when resolving a new version, and Renovate's
+# three-day hold still gates the merge. The accepted trade-off is that a
+# lockfile arriving through a pull request is no longer re-audited.
 trustLockfile: true
 
 allowBuilds:
