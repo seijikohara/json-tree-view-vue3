@@ -64,8 +64,8 @@ importers:
         specifier: ^1.94.2
         version: 1.102.0
       taze:
-        specifier: ^19.14.1
-        version: 19.17.2
+        specifier: ^20.0.0
+        version: 20.0.0
       typescript:
         specifier: ~6.0.2
         version: 6.0.3
@@ -1915,8 +1915,8 @@ packages:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
 
-  taze@19.17.2:
-    resolution: {integrity: sha512-1WH+LUf5H0R07EF606fuP5TuHPVvtrMIPpn69EkqaOVJYg0foL8xnD+lEs0s19Zfmplul5nRd3TpbbF0twXCkw==}
+  taze@20.0.0:
+    resolution: {integrity: sha512-aygXyZ0wQrQGjuclEWE1qSyxnlVERKO51Re+xhHwgS0Ml2dqCIXpMjRrUdV1thJFOUwKJj9XPvv9ZVlAaV0CWg==}
     hasBin: true
 
   thenify-all@1.6.0:
@@ -3863,7 +3863,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  taze@19.17.2:
+  taze@20.0.0:
     dependencies:
       '@antfu/ni': 30.3.0
       '@henrygd/queue': 1.2.0
