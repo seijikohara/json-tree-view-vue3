@@ -24,7 +24,7 @@ const onSelected = (event: SelectedData) => {
   </div>
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .theme-light {
   background-color: #ffffff;
 }

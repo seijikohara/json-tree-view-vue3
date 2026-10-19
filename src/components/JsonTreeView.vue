@@ -138,7 +138,7 @@ const parsed = computed(() => parseJsonToItemData(json, rootKey))
   />
 </template>
 
-<style lang="scss" scoped>
+<style scoped>
 .root-item {
   /* Color palette - Light theme */
   --jtv-key-color: oklch(0.55 0.15 240); /* #0977e6 */
