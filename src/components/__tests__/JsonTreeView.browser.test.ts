@@ -22,10 +22,16 @@ const renderLightTree = () =>
 
 const renderDarkTree = () => render(JsonTreeView, { props: { json, colorScheme: 'dark' } })
 
-const query = <T extends Element = HTMLElement>(root: ParentNode, selector: string): T => {
-  const el = root.querySelector<T>(selector)
-  if (!el) {
-    throw new Error(`query: no element matched "${selector}"`)
+// Takes the expected element class so the result is checked at runtime
+// instead of cast through querySelector's unchecked type parameter.
+const query = <T extends Element>(
+  root: ParentNode,
+  selector: string,
+  type: abstract new () => T
+): T => {
+  const el = root.querySelector(selector)
+  if (!(el instanceof type)) {
+    throw new Error(`query: no ${type.name} matched "${selector}"`)
   }
   return el
 }
@@ -95,7 +101,7 @@ describe('JsonTreeView', () => {
 
     test('toggles aria-expanded on click', async () => {
       const { container } = await renderLightTree()
-      const toggleButton = query<HTMLButtonElement>(container, '.data-key')
+      const toggleButton = query(container, '.data-key', HTMLButtonElement)
 
       expect(toggleButton.getAttribute('aria-expanded')).toBe('true')
 
@@ -110,8 +116,8 @@ describe('JsonTreeView', () => {
 
     test('toggles the chevron opened class', async () => {
       const { container } = await renderLightTree()
-      const toggleButton = query<HTMLButtonElement>(container, '.data-key')
-      const chevron = query(container, '.chevron-arrow')
+      const toggleButton = query(container, '.data-key', HTMLButtonElement)
+      const chevron = query(container, '.chevron-arrow', Element)
 
       expect(chevron.classList.contains('opened')).toBe(true)
 
@@ -126,9 +132,9 @@ describe('JsonTreeView', () => {
 
     test('shows and hides children on toggle', async () => {
       const { container } = await renderLightTree()
-      const toggleButton = query<HTMLButtonElement>(container, '.data-key')
-      const rootItem = query(container, '.root-item')
-      const firstChild = query(rootItem, '.json-view-item')
+      const toggleButton = query(container, '.data-key', HTMLButtonElement)
+      const rootItem = query(container, '.root-item', Element)
+      const firstChild = query(rootItem, '.json-view-item', Element)
 
       expect(firstChild.checkVisibility()).toBe(true)
 
