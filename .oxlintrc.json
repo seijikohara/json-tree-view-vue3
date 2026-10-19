@@ -12,6 +12,7 @@
     "vue/require-prop-types": "error"
   },
   "options": {
+    "typeAware": true,
     "denyWarnings": true,
     "reportUnusedDisableDirectives": "error"
   },
