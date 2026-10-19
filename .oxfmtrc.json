@@ -4,5 +4,7 @@
   "printWidth": 100,
   "tabWidth": 2,
   "trailingComma": "none",
-  "ignorePatterns": ["pnpm-lock.yaml", "dist/"]
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "ignorePatterns": ["dist/", "coverage/", "pnpm-lock.yaml"]
 }

@@ -56,9 +56,9 @@
       matchPackageNames: ['vite', 'vite-plugin-*', 'typescript', 'sass']
     },
     {
-      description: 'Group the oxc toolchain',
-      groupName: 'oxc',
-      matchPackageNames: ['oxlint', 'oxfmt', 'eslint-plugin-oxlint', '@oxlint/*']
+      description: 'Group the oxc linting and formatting toolchain',
+      groupName: 'linting and formatting',
+      matchPackageNames: ['oxlint', 'oxfmt', '@oxlint/*', 'oxlint-tsgolint']
     },
     {
       description: 'Group the test toolchain',

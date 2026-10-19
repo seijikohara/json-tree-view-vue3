@@ -1,8 +1,19 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["eslint", "typescript", "unicorn", "oxc", "vue"],
   "categories": {
     "correctness": "error",
     "suspicious": "error"
   },
-  "ignorePatterns": ["node_modules/**", "dist/**"]
+  "rules": {
+    "vue/component-definition-name-casing": "error",
+    "vue/prop-name-casing": "error",
+    "vue/require-default-prop": "error",
+    "vue/require-prop-types": "error"
+  },
+  "options": {
+    "denyWarnings": true,
+    "reportUnusedDisableDirectives": "error"
+  },
+  "ignorePatterns": ["node_modules/**", "dist/**", "coverage/**"]
 }
