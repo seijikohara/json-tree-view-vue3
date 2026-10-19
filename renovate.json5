@@ -40,7 +40,7 @@
       addLabels: ['major']
     },
     {
-      description: 'Hold TypeScript at 6.x: vue-tsc and vite-plugin-dts need the TypeScript JS API that TypeScript 7.0 does not ship. Remove this rule once TypeScript 7.1 is stable and vue-tsc supports it through content mappers, or golar reaches 1.0.',
+      description: 'Hold TypeScript at 6.x: vue-tsc and unplugin-dts need the TypeScript JS API that TypeScript 7.0 does not ship. Remove this rule once TypeScript 7.1 is stable and vue-tsc supports it through content mappers, or golar reaches 1.0.',
       matchPackageNames: ['typescript'],
       allowedVersions: '<7'
     },
