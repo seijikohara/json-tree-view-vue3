@@ -42,3 +42,6 @@ pnpm-debug.log*
 # Packaging and browser-test artifacts
 *.tgz
 __screenshots__/
+
+# Vitest 5 output (attachments, failure screenshots, reports)
+.vitest/

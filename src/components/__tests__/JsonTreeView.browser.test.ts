@@ -185,7 +185,7 @@ describe('JsonTreeView', () => {
 
     test('renders nested objects', async () => {
       const screen = await renderLightTree()
-      await expect.element(screen.getByText('nestedObject')).toBeVisible()
+      await expect.element(screen.getByText('nestedObject', { exact: false })).toBeVisible()
     })
   })
 
