@@ -128,7 +128,7 @@ const getValueColor = (value: PrimitiveTypes) => getValueColorVariable(value)
   </div>
 </template>
 
-<style lang="scss">
+<style>
 /* Base item spacing */
 .json-view-item:where(:not(.root-item)) {
   margin-inline-start: 15px;

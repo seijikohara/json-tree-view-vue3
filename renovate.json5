@@ -53,7 +53,14 @@
     {
       description: 'Group the build toolchain',
       groupName: 'build toolchain',
-      matchPackageNames: ['vite', 'vite-plugin-*', 'typescript', 'sass']
+      matchPackageNames: [
+        'vite',
+        'vite-plugin-*',
+        'unplugin-dts',
+        'typescript',
+        '@microsoft/api-extractor',
+        '@vue/language-core'
+      ]
     },
     {
       description: 'Group the oxc linting and formatting toolchain',
