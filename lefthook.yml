@@ -1,11 +1,16 @@
 pre-commit:
   jobs:
     - name: format staged files
-      run: pnpm exec oxfmt {staged_files}
+      # The glob also matches files that .oxfmtrc.json ignores, such as
+      # pnpm-lock.yaml. Without the flag, oxfmt exits 2 when it ignores every
+      # staged file, so a lockfile-only commit fails.
+      run: pnpm exec oxfmt --no-error-on-unmatched-pattern {staged_files}
       glob: '*.{ts,js,mjs,cjs,vue,json,md,yml,yaml,css,scss,html}'
       stage_fixed: true
     - name: lint staged files
-      run: pnpm exec oxlint --fix {staged_files}
+      # Likewise, oxlint exits 1 when .oxlintrc.json ignores every staged file
+      # (for example under dist/ or coverage/).
+      run: pnpm exec oxlint --no-error-on-unmatched-pattern --fix {staged_files}
       glob: '*.{ts,js,mjs,cjs,vue}'
       stage_fixed: true
 
