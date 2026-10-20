@@ -1,3 +1,8 @@
+# Keep the packageManager pin out of pnpm-lock.yaml. Since pnpm 12, pmOnFail
+# also decides whether pnpm records the pinned version in the lockfile
+# (packageManagerDependencies), and `ignore` keeps it out. Without it, a
+# lockfile that lacks the entry fails `pnpm install --frozen-lockfile`.
+# `ignore` also lets any local pnpm run without switching to the pinned version.
 pmOnFail: ignore
 
 # Trust the resolutions the lockfile already records. The setting applies to
