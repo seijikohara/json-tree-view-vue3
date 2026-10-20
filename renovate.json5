@@ -24,8 +24,11 @@
   automergeStrategy: 'rebase',
   // Hold every release for 3 days so a hijacked publish cannot ride automerge on day zero.
   minimumReleaseAge: '3 days',
-  // Auto-merge the weekly lock file refresh together with regular updates.
-  lockFileMaintenance: { automerge: true },
+  // Auto-merge the weekly lock file refresh together with regular updates, in the
+  // same Monday window. config:best-practices limits lock file maintenance to
+  // Monday 00:00-03:59, which usually gets one Mend run, and that run spends the
+  // hourly PR limit on regular updates before it reaches lock file maintenance.
+  lockFileMaintenance: { automerge: true, schedule: ['before 9am on monday'] },
   packageRules: [
     {
       description: 'Auto-merge non-major updates once CI passes',
