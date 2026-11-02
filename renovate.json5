@@ -1,62 +1,17 @@
 {
-  // Shared Renovate policy across seijikohara repositories.
-  // Schema: https://docs.renovatebot.com/renovate-schema.json
   $schema: 'https://docs.renovatebot.com/renovate-schema.json',
-  extends: [
-    // Maintainer-recommended superset of config:recommended. Pins GitHub Action
-    // and Docker digests, enables config migration, dev-dependency pinning,
-    // weekly lock file maintenance, and the npm minimum-release-age cooldown.
-    'config:best-practices',
-    // Conventional Commits with a unified `chore(deps): ...` subject.
-    ':semanticCommits',
-    ':semanticCommitTypeAll(chore)',
-    ':semanticCommitScope(deps)',
-    // Keep npm semver ranges (the committed lockfile gives reproducibility); overrides
-    // best-practices dev-dependency pinning. Action digest pinning is unaffected.
-    ':preserveSemverRanges'
-  ],
-  timezone: 'Asia/Tokyo',
-  schedule: ['before 9am on monday'],
-  labels: ['dependencies'],
-  // Keep update branches rebased on main and merge via rebase once CI passes.
-  rebaseWhen: 'behind-base-branch',
-  platformAutomerge: true,
-  automergeStrategy: 'rebase',
-  // Hold every release for 3 days so a hijacked publish cannot ride automerge on day zero.
-  minimumReleaseAge: '3 days',
-  // Auto-merge the weekly lock file refresh together with regular updates, in the
-  // same Monday window. config:best-practices limits lock file maintenance to
-  // Monday 00:00-03:59, which usually gets one Mend run, and that run spends the
-  // hourly PR limit on regular updates before it reaches lock file maintenance.
-  lockFileMaintenance: { automerge: true, schedule: ['before 9am on monday'] },
+  // Shared policy: https://github.com/seijikohara/renovate-config
+  extends: ['github>seijikohara/renovate-config:default.json5'],
   packageRules: [
-    {
-      description: 'Auto-merge non-major updates once CI passes',
-      matchUpdateTypes: ['minor', 'patch', 'pin', 'pinDigest', 'digest'],
-      automerge: true
-    },
-    {
-      description: 'Hold major updates for manual review via the dependency dashboard',
-      matchUpdateTypes: ['major'],
-      automerge: false,
-      dependencyDashboardApproval: true,
-      addLabels: ['major']
-    },
     {
       description: 'Hold TypeScript at 6.x: vue-tsc and unplugin-dts need the TypeScript JS API that TypeScript 7.0 does not ship. Remove this rule once TypeScript 7.1 is stable and vue-tsc supports it through content mappers, or golar reaches 1.0.',
       matchPackageNames: ['typescript'],
       allowedVersions: '<7'
     },
     {
-      description: 'Group and label GitHub Actions updates',
-      matchManagers: ['github-actions'],
-      groupName: 'github-actions',
-      addLabels: ['github-actions']
-    },
-    {
       description: 'Group the Vue framework and its tooling',
       groupName: 'vue',
-      matchPackageNames: ['vue', 'vue-router', 'vue-tsc', '@vue/*', '@vitejs/plugin-vue']
+      matchPackageNames: ['vue', 'vue-tsc', '@vue/*', '@vitejs/plugin-vue']
     },
     {
       description: 'Group the build toolchain',
@@ -71,26 +26,23 @@
       ]
     },
     {
+      // oxlint declares the oxlint-tsgolint version it needs as a peer dependency,
+      // and oxlint-tsgolint moves to a new major with TypeScript. Keep majors in the
+      // same PR so oxlint never lands without a matching oxlint-tsgolint.
       description: 'Group the oxc linting and formatting toolchain',
       groupName: 'linting and formatting',
-      matchPackageNames: ['oxlint', 'oxfmt', '@oxlint/*', 'oxlint-tsgolint']
+      matchPackageNames: ['oxlint', 'oxfmt', 'oxlint-tsgolint'],
+      separateMajorMinor: false
     },
     {
       description: 'Group the test toolchain',
-      groupName: 'vitest',
+      groupName: 'testing',
       matchPackageNames: ['vitest', '@vitest/*', 'vitest-browser-vue', 'playwright']
     },
     {
       description: 'Group TypeScript type definitions',
       groupName: 'type definitions',
-      matchPackageNames: ['@types/*', '@tsconfig/*']
+      matchPackageNames: ['@types/*']
     }
-  ],
-  vulnerabilityAlerts: {
-    description: 'Raise security fixes immediately and require manual review',
-    schedule: ['at any time'],
-    minimumReleaseAge: null,
-    addLabels: ['security'],
-    automerge: false
-  }
+  ]
 }
