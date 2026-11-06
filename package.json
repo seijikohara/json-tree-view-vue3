@@ -57,7 +57,7 @@
     "@vue/language-core": "^3.3.7",
     "@vue/tsconfig": "^0.9.1",
     "lefthook": "^2.1.10",
-    "oxfmt": "^0.75.0",
+    "oxfmt": "^0.76.0",
     "oxlint": "^1.89.0",
     "oxlint-tsgolint": "^7.0.2004",
     "playwright": "^1.61.1",
